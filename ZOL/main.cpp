@@ -3,12 +3,13 @@
 
 struct AST //Abstract Syntax Tree
 {
-    struct node
+    struct token
     {
-        //AST::node* parent;
+        //AST::token* parent;
         enum{
             LITERAL,
             VARIABLE,
+            NOT,
             OR,
             AND
         } type ;
@@ -16,19 +17,19 @@ struct AST //Abstract Syntax Tree
             bool litVal; // for LITERAL evaluation
             char* varName; //for VARIABLE representation
             struct{
-                AST::node * left;
-                AST::node * right;
+                AST::token * left;
+                AST::token * right;
             };
         };
     };
 
-    node *root;
+    token *root;
 
     ~AST(){
         postDestruct(root);
     }
 
-    void postDestruct(node *x){
+    void postDestruct(token *x){
         if (x->leftChild) postDestruct(x->left);
         if (x->rightChild) postDestruct(x->right);
         delete x;
@@ -64,11 +65,11 @@ class ParseError : public std::exception {
 
 struct RDparser
 {
-    AST::node * parseExpression();
-    AST::node * parseTerm();
-    AST::node * parseUnary();
-    AST::node * parseFactor();
-    AST::node * parseAtom();
+    AST::token * parseExpression();
+    AST::token * parseTerm();
+    AST::token * parseUnary();
+    AST::token * parseFactor();
+    AST::token * parseAtom();
 
     vector<char*> tokens;
     size_t index = 0;
@@ -88,14 +89,45 @@ RDparser::parseExpression(){
     auto leftChild = parseTerm();
     if (accept("or")){
         auto rightChild  = parseTerm();
-        auto realOrNode = new AST::node;
+        auto realOrNode = new AST::token;
+        realOrNode->type = AST::token::OR;
         realOrNode->left = leftChild;
         realOrNode->right = rightChild;
+        return realOrNode;
+    }
+    return leftChild;
+}
+RDparser::parseTerm(){
+    auto leftChild = parseUnary();
+    if (accept("and")){
+        auto rightChild  = parseUnary();
+        auto realAndNode = new AST::token;
+        realAndNode->type = AST::token::OR;
+        realAndNode->left = leftChild;
+        realAndNode->right = rightChild;
+        return realAndNode;
+    }
+    return leftChild;
+}
+RDparser::parseUnary(){
+    if(accept("not")){
+        auto realNotNode = new AST::token;
+        realNotNode->type = AST::token::NOT;
+        realNotNode->left = parseUnary();
+        return realNotNode;
+    }
+    return parseFactor();
+}
+RDparser::parseFactor(){
+    if(accept("(")){
+        auto parenExpr = parseExpression();
+        if(accept(")")) return parenExpr;
+        else throw ParseError("ParseError: Parentheses");
+    }
+    if(accept("true")){
+
     }
 }
-RDparser::parseTerm()
-RDparser::parseUnary()
-RDparser::parseFactor()
 RDparser::parseAtom()
 
 int main()
