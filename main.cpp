@@ -15,7 +15,7 @@ struct AST //Abstract Syntax Tree
         } type ;
         union{
             bool litVal; // for LITERAL evaluation
-            char* varName; //for VARIABLE representation
+            const char* varName; //for VARIABLE representation
             struct{
                 AST::token * left;
                 AST::token * right;
@@ -23,15 +23,17 @@ struct AST //Abstract Syntax Tree
         };
     };
 
-    token *root;
+    token *root = nullptr;
 
     ~AST(){
-        postDestruct(root);
+        if(root)
+            postDestruct(root);
     }
 
     void postDestruct(token *x){
-        if (x->leftChild) postDestruct(x->left);
-        if (x->rightChild) postDestruct(x->right);
+
+        if (x->left) postDestruct(x->left);
+        if (x->right) postDestruct(x->right);
         delete x;
     }
 };
@@ -56,7 +58,9 @@ struct AST //Abstract Syntax Tree
 #include <exception>
 class ParseError : public std::exception {
 
-    const char* what() const throw();
+    const char* what() const throw(){
+        return "Parser fail";
+    };
 
 };
 
@@ -71,12 +75,13 @@ struct RDparser
     AST::token * parseFactor();
     AST::token * parseAtom();
 
-    vector<char*> tokens;
+    std::vector<const char*> tokens;
     size_t index = 0;
 
-    char* getNext(){return tokens[index];}
+    const char* getNext(){return tokens[index];}
 
-    bool accept(char* s){
+    bool accept(const char* s){
+        if(index >= tokens.size()) throw ParseError();
         if(getNext() == s){
             index++;
             return true;
@@ -85,7 +90,7 @@ struct RDparser
     }
 };
 
-RDparser::parseExpression(){
+AST::token * RDparser::parseExpression(){
     auto leftChild = parseTerm();
     if (accept("or")){
         auto rightChild  = parseTerm();
@@ -97,7 +102,7 @@ RDparser::parseExpression(){
     }
     return leftChild;
 }
-RDparser::parseTerm(){
+AST::token * RDparser::parseTerm(){
     auto leftChild = parseUnary();
     if (accept("and")){
         auto rightChild  = parseUnary();
@@ -109,7 +114,7 @@ RDparser::parseTerm(){
     }
     return leftChild;
 }
-RDparser::parseUnary(){
+AST::token * RDparser::parseUnary(){
     if(accept("not")){
         auto realNotNode = new AST::token;
         realNotNode->type = AST::token::NOT;
@@ -118,21 +123,37 @@ RDparser::parseUnary(){
     }
     return parseFactor();
 }
-RDparser::parseFactor(){
+AST::token * RDparser::parseFactor(){
     if(accept("(")){
         auto parenExpr = parseExpression();
         if(accept(")")) return parenExpr;
-        else throw ParseError("ParseError: Parentheses");
+        else throw ParseError();
     }
     if(accept("true")){
-
+        auto literal = new AST::token;
+        literal->type = AST::token::LITERAL;
+        literal->litVal = true;
+        return literal;
     }
+    if(accept("false")){
+        auto literal = new AST::token;
+        literal->type = AST::token::LITERAL;
+        literal->litVal = false;
+        return literal;
+    }
+
+    auto variable = new AST::token;
+    variable->type = AST::token::VARIABLE;
+    variable->varName = getNext();
+    index++;
+    return variable;
 }
-RDparser::parseAtom()
 
 int main()
 {
     AST tree;
-
+    RDparser rdp;
+    rdp.tokens=std::vector<const char*>{"first", "second"};
+    std::cout << rdp.parseUnary()->varName << "\n" << rdp.parseFactor()->varName;
     return 0;
 }

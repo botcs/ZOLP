@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1452728474 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\zol\main.cpp
+	<iostream>
+	<exception>
+	<vector>
+
