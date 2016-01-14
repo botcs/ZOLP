@@ -31,6 +31,7 @@ struct token
             token * left;
             token * right;
         };
+        token * child;
     };
     void print(std::ostream& o){
         switch (type){
@@ -72,6 +73,11 @@ struct token
             throw std::logic_error("Unrecognized token Type");
         }
     }
+
+    bool isAtom(){return type == FALSE || type == TRUE || type == VARIABLE;}
+    bool isUnary(){return type == NOT;}
+    bool isBinary(){return type == AND  || type == OR;}
+
     token(T _type): type(_type){}
     token(const std::string& tokenString): type(TokenDict[tokenString]){
         if(type == VARIABLE)

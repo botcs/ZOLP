@@ -43,6 +43,7 @@
 		<Unit filename="RecursiveDescentP.cpp" />
 		<Unit filename="RecursiveDescentP.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="tokens.cpp" />
 		<Unit filename="tokens.h" />
 		<Extensions>
 			<code_completion />

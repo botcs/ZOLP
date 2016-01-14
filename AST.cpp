@@ -1,10 +1,9 @@
 #include "AST.h"
 
-void AST::print(std::ostream& o, token* p, int indent){
-
-    if(p->type >= token::OR) { //SHORT FOR "p IS NOT LEAF OR SINGLE CHILDED (UNARY)"
+void AST::printFancy(std::ostream& o, token* p, int indent){
+    if(p->isBinary()) {
         if(p->right) {
-            print(o, p->right, indent+5);
+            printFancy(o, p->right, indent+5);
         }
         if (indent) {
             o << std::setw(indent) << ' ';
@@ -13,19 +12,34 @@ void AST::print(std::ostream& o, token* p, int indent){
         if (p->right) o<<" /\n" ;
     }
 
-    if (indent) {
-        o << std::setw(indent) << ' ';
-    }
+    if (indent) o << std::setw(indent) << ' ';
     p->print(o);
     o << "\n";
 
-
-    if(p->type >= token::NOT) { //SHORT FOR "p IS NOT LEAF"
+    if(p->isBinary()) {
         if(p->left) {
             o << std::setw(indent) << ' ' <<" \\\n";
-            print(o, p->left, indent+5);
+            printFancy(o, p->left, indent+5);
+        }
+    } else if (p->isUnary()){
+        if(p->child){
+            o << std::setw(indent) << ' ' <<" \\\n";
+            printFancy(o, p->child, indent+5);
         }
     }
+
+}
+
+void AST::printRaw(std::ostream& o, token* p, int indent){
+    o << std::setw(10);
+    p->print(o);
+    o << "\n";
+    if(p->isBinary()){
+        printRaw(o, p->left, indent + 3);
+        printRaw(o, p->right, indent + 3);
+    } else if (p->isUnary())
+        printRaw(o, p->child, indent + 3);
+
 }
 
 void AST::parse(std::stringstream& ss){
@@ -43,6 +57,15 @@ void AST::parse(std::stringstream& ss, std::ostream& o){
     while(!parser.complete()){
         root = parser.parseRightHalfExpr(root);
     }
+}
+
+void AST::atomizeNegation(token* x){
+
+    if(x->type > token::FALSE){ //X IS NOT LEAF
+        if(x->type == token::NOT && x->left->type > token::FALSE){
+
+        }
+    } else return;
 }
 
 void AST::postDestruct(token *p){

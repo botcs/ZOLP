@@ -43,7 +43,7 @@ token * RDparser::parseTerm(){
 token * RDparser::parseUnary(){
     if(accept(tk_ NOT)){
         auto realNotNode = getAccepted();
-        realNotNode->left = parseUnary();
+        realNotNode->child = parseUnary();
         return realNotNode;
     }
     return parseFactor();
