@@ -4,11 +4,30 @@
 	<exception>
 	<vector>
 
-1452734948 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\main.cpp
+1452736830 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\main.cpp
 	<iostream>
 	<iomanip>
 	<sstream>
 	<string>
-	<exception>
+	"AST.h"
+
+1452737722 c:\documents and settings\rendszergazda\asztal\csabbi\zolp\ast.h
+	"RecursiveDescentP.h"
+
+1452737763 c:\documents and settings\rendszergazda\asztal\csabbi\zolp\recursivedescentp.h
+	<iostream>
+	<iomanip>
+	<sstream>
+	<string>
 	<vector>
+	<exception>
+	"tokens.h"
+
+1452737424 c:\documents and settings\rendszergazda\asztal\csabbi\zolp\tokens.h
+
+1452737460 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\recursivedescentp.cpp
+	"RecursiveDescentP.h"
+
+1452737720 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\ast.cpp
+	"AST.h"
 
