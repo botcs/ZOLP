@@ -14,6 +14,7 @@ struct AST //Abstract Syntax Tree
     void print(std::ostream& o, token* p, int indent = 0);
 
     void parse(std::stringstream& ss);
+    void parse(std::stringstream& ss, std::ostream& o = std::cout);
 
     ~AST(){postDestruct(root);}
 

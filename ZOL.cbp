@@ -12,6 +12,9 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
 					<Add option="-g" />
 				</Compiler>
 			</Target>
@@ -29,10 +32,18 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Wzero-as-null-pointer-constant" />
+			<Add option="-std=c++11" />
+			<Add option="-Wextra" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="AST.cpp" />
+		<Unit filename="AST.h" />
+		<Unit filename="RecursiveDescentP.cpp" />
+		<Unit filename="RecursiveDescentP.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="tokens.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

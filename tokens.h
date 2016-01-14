@@ -1,13 +1,14 @@
 #ifndef TOKENS_H_INCLUDED
 #define TOKENS_H_INCLUDED
 #include <unordered_map>
+#include <exception>
 struct token
 {
     enum T{
         //OPERANDICES
+        VARIABLE = 0, //COMES HANDY IF TOKENDICTIONARY CAN'T FIND ANY ASSIGNED TOKEN
         TRUE,
         FALSE,
-        VARIABLE,
 
         //OPERATORS
         NOT,
@@ -37,6 +38,7 @@ struct token
 
         case FALSE:
             o << "FALSE";
+            break;
 
         case VARIABLE:
             o << '[' << varName << ']';
@@ -54,12 +56,26 @@ struct token
             o << "and";
             break;
 
+        case OPEN:
+            o << "OPEN";
+            break;
+
+        case CLOSE:
+            o << "CLOSE";
+            break;
+
+
+
         default:
-            o << "(";
+            throw std::logic_error("Unrecognized token Type");
         }
     }
     token(T _type): type(_type){}
-    token(std::string& tokenString): type(UsableTokens[tokenString]){}
+    token(std::string& tokenString): type(UsableTokens[tokenString]){
+        if(type == VARIABLE)
+            varName = tokenString.c_str();
+
+    }
 };
 
 

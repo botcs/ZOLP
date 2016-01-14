@@ -49,9 +49,10 @@ int main()
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "third"};
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "not", "not", "true"};
         //rdp.tokens=vector<string>{"first", "and", "second", "and", "third"};
-        stringstream ss("( [ false ]  ) and A or B or (C and ! D or ! ~ K)");
-        tree.parse(ss);
+        stringstream ss("true and false or true");
+        tree.parse(ss, cout);
         tree.print(cout);
+
 
     } catch (exception& e)
     {

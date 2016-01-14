@@ -6,12 +6,10 @@
 #define tk_ token::
 
 token * RDparser::parseRightHalfExpr(token * leftChild){
-    auto floatingNode = new token(tk_ OR);
-    if(accept(tk_ OR)) floatingNode->type = tk_ OR;
-    else if(accept(tk_ AND)) floatingNode->type = tk_ AND;
-    else {
+    auto floatingNode = getNext();
+    if( !(accept(tk_ OR) || accept(tk_ AND) ) )
         throw ParseError("Dangling operator collision ...");
-    }
+
 
     floatingNode->left = leftChild;
     floatingNode->right = parseExpression();
@@ -63,17 +61,30 @@ token * RDparser::parseFactor(){
         return new token (tk_ FALSE);
     }
 
-    auto variable = new token(tk_ VARIABLE);
-    variable->varName = getNext().varName;
+    auto variable = getNext();
     index++;
     return variable;
 }
-RDparser::RDparser(std::stringstream & Buffer4Parse){
-        std::string tokenString;
-        while(Buffer4Parse >> tokenString){
-            tokens.emplace_back(tokenString);
-        }
-
+RDparser::RDparser(std::stringstream & Buffer, std::ostream& o){
+    o << "Parser initialized at " << this << "\n"
+      << "\"input\"\t interpreted as\n"
+      << "********************************************\n";
+    std::string tokenString;
+    while(Buffer >> tokenString){
+        o << "\"" << tokenString << "\"\t ";
+        tokens.push_back(new token(tokenString) );
+        tokens.back()->print(o);
+        o << " ;\n";
     }
+    o << "Factorizing ended\n\n";
+
+}
+
+RDparser::RDparser(std::stringstream & Buffer){
+    std::string tokenString;
+    while(Buffer >> tokenString)
+        tokens.push_back(new token(tokenString) );
+
+}
 
 #endif // RECURSIVEDESCENTP_CPP_INCLUDED

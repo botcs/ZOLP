@@ -49,26 +49,33 @@ struct RDparser
     token * parseFactor();
     token * parseAtom();
 
-    std::vector<token> tokens;
+    std::vector<token*> tokens;
     size_t index = 0;
 
-    token& getNext(){
+    token * getNext(){
         if(index >= tokens.size())
             throw ParseError("Overindexing");
         return tokens[index];
+    }
+
+    token * getAccepted(){
+        if(index-1 >= tokens.size())
+            throw ParseError("Overindexing");
+        return tokens[index-1];
     }
 
     bool complete(){return tokens.size() == index;}
 
     bool accept(token::T type){
         if (complete()) return false;
-        if(getNext().type == type){
+        if(getNext()->type == type){
             index++;
             return true;
         }
         return false;
     }
     RDparser(std::stringstream & Buffer);
+    RDparser(std::stringstream & Buffer, std::ostream&);
 };
 
 
