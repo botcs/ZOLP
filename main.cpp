@@ -89,13 +89,21 @@ struct RDparser
     token * parseFactor();
     token * parseAtom();
 
-    std::vector<const char*> tokens;
+    std::vector<string> tokens;
     size_t index = 0;
 
-    const char* getNext(){return tokens[index];}
+    string getNext(){
+        if(index >= tokens.size())
+            throw ParseError("Overindexing");
+        return tokens[index];
+    }
 
-    bool accept(const char* s){
-        if(index > tokens.size()) throw ParseError("Overindexing");
+    bool complete(){
+        return tokens.size() == index;
+    }
+
+    bool accept(string s){
+        if (complete()) return false;
         if(getNext() == s){
             index++;
             return true;
@@ -103,31 +111,29 @@ struct RDparser
         return false;
     }
 
-    bool complete(){
-        return tokens.size() == index;
-    }
 
     RDparser(std::stringstream & Buffer4Parse){
-        std::string token;
+        string token;
         while(Buffer4Parse >> token){
-            tokens.push_back(token.c_str());
+            tokens.emplace_back(token);
         }
         for(auto a : tokens){
-            cout << a;
+            cout << " \"" << a << "\" ";
         }
+        cout << "\nTOKENIZING FINISHED\n\n";
     }
 };
 
 token * RDparser::parseRightHalfExpr(token * leftChild){
-    if (accept("or")){
-        auto rightChild  = parseTerm();
-        auto realOrNode = new token;
-        realOrNode->type = token::OR;
-        realOrNode->left = leftChild;
-        realOrNode->right = rightChild;
-        return realOrNode;
-    }
-    return leftChild;
+    auto floatingNode = new token;
+    if(accept("or")) floatingNode->type = token::OR;
+    else if(accept("and")) floatingNode->type = token::AND;
+    else throw ParseError("operator could not be resolved!");
+
+    floatingNode->left = leftChild;
+    floatingNode->right = parseExpression();
+
+    return floatingNode;
 }
 
 token * RDparser::parseExpression(){
@@ -184,7 +190,7 @@ token * RDparser::parseFactor(){
 
     auto variable = new token;
     variable->type = token::VARIABLE;
-    variable->varName = getNext();
+    variable->varName = getNext().c_str();
     index++;
     return variable;
 }
@@ -202,7 +208,7 @@ struct AST //Abstract Syntax Tree
 
         if(p->type > 2) { //SHORT FOR "p IS NOT LEAF"
             if(p->right) {
-                print(o, p->right, indent+3);
+                print(o, p->right, indent+5);
             }
             if (indent) {
                 o << std::setw(indent) << ' ';
@@ -221,7 +227,7 @@ struct AST //Abstract Syntax Tree
         if(p->type > 1) {
             if(p->left) {
                 o << std::setw(indent) << ' ' <<" \\\n";
-                print(o, p->left, indent+3);
+                print(o, p->left, indent+5);
             }
         }
     }
@@ -229,9 +235,9 @@ struct AST //Abstract Syntax Tree
     void parse(std::stringstream& ss){
         RDparser parser(ss);
         root = parser.parseExpression();
-        /*while(!parser.complete())
+        while(!parser.complete())
             root = parser.parseRightHalfExpr(root);
-        */
+
 
     }
 
@@ -256,10 +262,10 @@ int main()
     using namespace std;
     try{
         AST tree;
-        //rdp.tokens=vector<const char*>{"(", "first", "and", "second", ")",  "and", "third"};
-        //rdp.tokens=vector<const char*>{"(", "first", "and", "second", ")",  "and", "not", "not", "true"};
-        //rdp.tokens=vector<const char*>{"first", "and", "second", "and", "third"};
-        stringstream ss("true and false");
+        //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "third"};
+        //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "not", "not", "true"};
+        //rdp.tokens=vector<string>{"first", "and", "second", "and", "third"};
+        stringstream ss("first and ( second and not not true ) or false");
         tree.parse(ss);
         tree.print(cout);
 
