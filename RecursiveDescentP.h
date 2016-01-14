@@ -15,7 +15,7 @@ class ParseError : public std::exception {
         return _detail;
     };
 public:
-    ParseError(const char* detail) : _detail(detail){}
+    ParseError( std::string detail) : _detail(detail.c_str()){}
 };
 
 
@@ -49,10 +49,10 @@ struct RDparser
     token * parseFactor();
     token * parseAtom();
 
-    std::vector<std::string> tokens;
+    std::vector<token> tokens;
     size_t index = 0;
 
-    std::string getNext(){
+    token& getNext(){
         if(index >= tokens.size())
             throw ParseError("Overindexing");
         return tokens[index];
@@ -60,9 +60,9 @@ struct RDparser
 
     bool complete(){return tokens.size() == index;}
 
-    bool accept(std::string s){
+    bool accept(token::T type){
         if (complete()) return false;
-        if(getNext() == s){
+        if(getNext().type == type){
             index++;
             return true;
         }

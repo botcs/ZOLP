@@ -1,17 +1,28 @@
 #ifndef TOKENS_H_INCLUDED
 #define TOKENS_H_INCLUDED
+#include <unordered_map>
 struct token
 {
-    //token* parent;
-    enum{
-        LITERAL,
+    enum T{
+        //OPERANDICES
+        TRUE,
+        FALSE,
         VARIABLE,
+
+        //OPERATORS
         NOT,
         OR,
-        AND
+        AND,
+
+        //PARENTHESES
+        OPEN,
+        CLOSE
     } type ;
+
+
+    static std::unordered_map<std::string, T> UsableTokens;
+
     union{
-        bool litVal; // for LITERAL evaluation
         const char* varName; //for VARIABLE representation
         struct{
             token * left;
@@ -20,17 +31,19 @@ struct token
     };
     void print(std::ostream& o){
         switch (type){
-        case LITERAL:
-            if(litVal) o << " T ";
-            else       o << " F ";
+        case TRUE:
+            o << "TRUE";
             break;
+
+        case FALSE:
+            o << "FALSE";
 
         case VARIABLE:
             o << '[' << varName << ']';
             break;
 
         case NOT:
-            o << " !";
+            o << "not";
             break;
 
         case OR:
@@ -40,8 +53,16 @@ struct token
         case AND:
             o << "and";
             break;
+
+        default:
+            o << "(";
         }
     }
+    token(T _type): type(_type){}
+    token(std::string& tokenString): type(UsableTokens[tokenString]){}
 };
+
+
+
 
 #endif // TOKENS_H_INCLUDED

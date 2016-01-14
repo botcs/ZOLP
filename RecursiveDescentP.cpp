@@ -3,11 +3,15 @@
 
 #include "RecursiveDescentP.h"
 
+#define tk_ token::
+
 token * RDparser::parseRightHalfExpr(token * leftChild){
-    auto floatingNode = new token;
-    if(accept("or")) floatingNode->type = token::OR;
-    else if(accept("and")) floatingNode->type = token::AND;
-    else throw ParseError("operator could not be resolved!");
+    auto floatingNode = new token(tk_ OR);
+    if(accept(tk_ OR)) floatingNode->type = tk_ OR;
+    else if(accept(tk_ AND)) floatingNode->type = tk_ AND;
+    else {
+        throw ParseError("Dangling operator collision ...");
+    }
 
     floatingNode->left = leftChild;
     floatingNode->right = parseExpression();
@@ -17,10 +21,9 @@ token * RDparser::parseRightHalfExpr(token * leftChild){
 
 token * RDparser::parseExpression(){
     auto leftChild = parseTerm();
-    if (accept("or")){
+    if (accept(tk_ OR)){
         auto rightChild  = parseTerm();
-        auto realOrNode = new token;
-        realOrNode->type = token::OR;
+        auto realOrNode = new token(tk_ OR);
         realOrNode->left = leftChild;
         realOrNode->right = rightChild;
         return realOrNode;
@@ -29,10 +32,9 @@ token * RDparser::parseExpression(){
 }
 token * RDparser::parseTerm(){
     auto leftChild = parseUnary();
-    if (accept("and")){
+    if (accept(tk_ AND)){
         auto rightChild  = parseUnary();
-        auto realAndNode = new token;
-        realAndNode->type = token::AND;
+        auto realAndNode = new token(tk_ AND);
         realAndNode->left = leftChild;
         realAndNode->right = rightChild;
         return realAndNode;
@@ -40,50 +42,38 @@ token * RDparser::parseTerm(){
     return leftChild;
 }
 token * RDparser::parseUnary(){
-    if(accept("not")){
-        auto realNotNode = new token;
-        realNotNode->type = token::NOT;
+    if(accept(tk_ NOT)){
+        auto realNotNode = new token(tk_ NOT);
         realNotNode->left = parseUnary();
         return realNotNode;
     }
     return parseFactor();
 }
 token * RDparser::parseFactor(){
-    if(accept("(")){
+    if(accept(tk_ OPEN)){
         auto parenExpr = parseExpression();
-        if(accept(")")) return parenExpr;
+        if(accept(tk_ CLOSE)) return parenExpr;
         else throw ParseError("Missing paren");
     }
-    if(accept("true")){
-        auto literal = new token;
-        literal->type = token::LITERAL;
-        literal->litVal = true;
-        return literal;
-    }
-    if(accept("false")){
-        auto literal = new token;
-        literal->type = token::LITERAL;
-        literal->litVal = false;
-        return literal;
+    if(accept(tk_ TRUE)){
+        return new token(tk_ TRUE);
     }
 
-    auto variable = new token;
-    variable->type = token::VARIABLE;
-    variable->varName = getNext().c_str();
+    if(accept(tk_ FALSE)){
+        return new token (tk_ FALSE);
+    }
+
+    auto variable = new token(tk_ VARIABLE);
+    variable->varName = getNext().varName;
     index++;
     return variable;
 }
 RDparser::RDparser(std::stringstream & Buffer4Parse){
-        std::string token;
-        while(Buffer4Parse >> token){
-            tokens.emplace_back(token);
+        std::string tokenString;
+        while(Buffer4Parse >> tokenString){
+            tokens.emplace_back(tokenString);
         }
-        #ifndef NDEBUG
-            for(auto a : tokens){
-                std::cout << " \"" << a << "\" ";
-            }
-            std::cout << "\nTOKENIZING FINISHED\n\n";
-        #endif // NDEBUG
+
     }
 
 #endif // RECURSIVEDESCENTP_CPP_INCLUDED
