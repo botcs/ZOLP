@@ -74,6 +74,8 @@ struct RDparser
         }
         return false;
     }
+    void print(std::ostream&);
+
     RDparser(std::stringstream & Buffer);
     RDparser(std::stringstream & Buffer, std::ostream&);
 };

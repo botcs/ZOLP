@@ -2,7 +2,7 @@
 
 void AST::print(std::ostream& o, token* p, int indent){
 
-    if(p->type > token::OR) { //SHORT FOR "p IS NOT LEAF"
+    if(p->type >= token::OR) { //SHORT FOR "p IS NOT LEAF OR SINGLE CHILDED (UNARY)"
         if(p->right) {
             print(o, p->right, indent+5);
         }
@@ -20,7 +20,7 @@ void AST::print(std::ostream& o, token* p, int indent){
     o << "\n";
 
 
-    if(p->type >= token::OR) {
+    if(p->type >= token::NOT) { //SHORT FOR "p IS NOT LEAF"
         if(p->left) {
             o << std::setw(indent) << ' ' <<" \\\n";
             print(o, p->left, indent+5);
@@ -37,6 +37,8 @@ void AST::parse(std::stringstream& ss){
 
 void AST::parse(std::stringstream& ss, std::ostream& o){
     RDparser parser(ss, o);
+
+
     root = parser.parseExpression();
 
     while(!parser.complete()){

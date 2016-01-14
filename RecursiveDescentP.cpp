@@ -20,10 +20,11 @@ token * RDparser::parseRightHalfExpr(token * leftChild){
 token * RDparser::parseExpression(){
     auto leftChild = parseTerm();
     if (accept(tk_ OR)){
+        auto realOrNode = getAccepted();
         auto rightChild  = parseTerm();
-        auto realOrNode = new token(tk_ OR);
         realOrNode->left = leftChild;
         realOrNode->right = rightChild;
+
         return realOrNode;
     }
     return leftChild;
@@ -31,8 +32,8 @@ token * RDparser::parseExpression(){
 token * RDparser::parseTerm(){
     auto leftChild = parseUnary();
     if (accept(tk_ AND)){
+        auto realAndNode = getAccepted();
         auto rightChild  = parseUnary();
-        auto realAndNode = new token(tk_ AND);
         realAndNode->left = leftChild;
         realAndNode->right = rightChild;
         return realAndNode;
@@ -41,7 +42,7 @@ token * RDparser::parseTerm(){
 }
 token * RDparser::parseUnary(){
     if(accept(tk_ NOT)){
-        auto realNotNode = new token(tk_ NOT);
+        auto realNotNode = getAccepted();
         realNotNode->left = parseUnary();
         return realNotNode;
     }
@@ -54,22 +55,35 @@ token * RDparser::parseFactor(){
         else throw ParseError("Missing paren");
     }
     if(accept(tk_ TRUE)){
-        return new token(tk_ TRUE);
+        return getAccepted();
     }
 
     if(accept(tk_ FALSE)){
-        return new token (tk_ FALSE);
+        return getAccepted();
     }
 
-    auto variable = getNext();
-    index++;
-    return variable;
+    if(accept(tk_ VARIABLE))
+        return getAccepted();
+
+    throw ParseError("Could not resolve Atomic expression");
 }
+
+void RDparser::print(std::ostream& o){
+    o << "BUFFERED tokens at " << this << " :\n";
+    for(auto t : tokens){
+        o << " \"";
+        t->print(o);
+        o << "\"";
+    }
+    o << "\n";
+}
+
 RDparser::RDparser(std::stringstream & Buffer, std::ostream& o){
     o << "Parser initialized at " << this << "\n"
       << "\"input\"\t interpreted as\n"
       << "********************************************\n";
     std::string tokenString;
+
     while(Buffer >> tokenString){
         o << "\"" << tokenString << "\"\t ";
         tokens.push_back(new token(tokenString) );
