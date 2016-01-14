@@ -51,6 +51,7 @@ struct RDparser
 
     std::vector<token*> tokens;
     size_t index = 0;
+    size_t parenDepth = 0;
 
     token * getNext(){
         if(index >= tokens.size())
@@ -69,12 +70,14 @@ struct RDparser
     bool accept(token::T type){
         if (complete()) return false;
         if(getNext()->type == type){
-            index++;
+            ++index;
             return true;
         }
         return false;
     }
     void print(std::ostream&);
+
+    std::vector<token*> disassemblyToken(std::string& T);
 
     RDparser(std::stringstream & Buffer);
     RDparser(std::stringstream & Buffer, std::ostream&);

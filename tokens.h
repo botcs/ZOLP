@@ -2,6 +2,7 @@
 #define TOKENS_H_INCLUDED
 #include <unordered_map>
 #include <exception>
+#include <iostream>
 struct token
 {
     enum T{
@@ -21,7 +22,8 @@ struct token
     } type ;
 
 
-    static std::unordered_map<std::string, T> UsableTokens;
+    static std::unordered_map<std::string, T> TokenDict;
+    static size_t maxTokenLength;
 
     union{
         const char* varName; //for VARIABLE representation
@@ -71,7 +73,7 @@ struct token
         }
     }
     token(T _type): type(_type){}
-    token(std::string& tokenString): type(UsableTokens[tokenString]){
+    token(const std::string& tokenString): type(TokenDict[tokenString]){
         if(type == VARIABLE)
             varName = tokenString.c_str();
 

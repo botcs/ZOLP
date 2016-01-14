@@ -37,12 +37,9 @@ void AST::parse(std::stringstream& ss){
 
 void AST::parse(std::stringstream& ss, std::ostream& o){
     RDparser parser(ss, o);
-
-
     root = parser.parseExpression();
 
     while(!parser.complete()){
-        print(std::cout);
         root = parser.parseRightHalfExpr(root);
     }
 }

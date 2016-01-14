@@ -7,39 +7,6 @@
 
 #include "AST.h"
 
-
-std::unordered_map<std::string, token::T> token::UsableTokens = {
-    {"false", token::FALSE},
-    {"FALSE", token::FALSE},
-    {"F", token::FALSE},
-    {"f", token::FALSE},
-
-    {"true", token::TRUE},
-    {"TRUE", token::TRUE},
-    {"T", token::TRUE},
-    {"t", token::TRUE},
-
-    {"not", token::NOT},
-    {"!", token::NOT},
-    {"~", token::NOT},
-
-    {"and", token::AND},
-    {"&&", token::AND},
-    {"&", token::AND},
-
-    {"or", token::OR},
-    {"||", token::OR},
-    {"|", token::OR},
-
-    {"(", token::OPEN},
-    {"{", token::OPEN},
-    {"[", token::OPEN},
-
-    {"]", token::CLOSE},
-    {"}", token::CLOSE},
-    {")", token::CLOSE},
-};
-
 int main()
 {
 
@@ -49,10 +16,9 @@ int main()
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "third"};
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "not", "not", "true"};
         //rdp.tokens=vector<string>{"first", "and", "second", "and", "third"};
-        stringstream ss("true and B or not true");
+        stringstream ss("( A or B or C or D )");
         tree.parse(ss, cout);
         tree.print(cout);
-
 
     } catch (exception& e)
     {

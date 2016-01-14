@@ -32,17 +32,17 @@
 1452737720 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\ast.cpp
 	"AST.h"
 
-1452767894 source:/home/botcs/CPP/ZOLP/main.cpp
+1452771986 source:/home/botcs/CPP/ZOLP/main.cpp
 	<iostream>
 	<iomanip>
 	<sstream>
 	<string>
 	"AST.h"
 
-1452760164 /home/botcs/CPP/ZOLP/AST.h
+1452768428 /home/botcs/CPP/ZOLP/AST.h
 	"RecursiveDescentP.h"
 
-1452766639 /home/botcs/CPP/ZOLP/RecursiveDescentP.h
+1452773524 /home/botcs/CPP/ZOLP/RecursiveDescentP.h
 	<iostream>
 	<iomanip>
 	<sstream>
@@ -51,13 +51,17 @@
 	<exception>
 	"tokens.h"
 
-1452765150 /home/botcs/CPP/ZOLP/tokens.h
+1452774887 /home/botcs/CPP/ZOLP/tokens.h
 	<unordered_map>
 	<exception>
+	<iostream>
 
-1452767976 source:/home/botcs/CPP/ZOLP/AST.cpp
+1452768662 source:/home/botcs/CPP/ZOLP/AST.cpp
 	"AST.h"
 
-1452767894 source:/home/botcs/CPP/ZOLP/RecursiveDescentP.cpp
+1452771929 source:/home/botcs/CPP/ZOLP/RecursiveDescentP.cpp
 	"RecursiveDescentP.h"
+
+1452772319 source:/home/botcs/CPP/ZOLP/tokens.cpp
+	"tokens.h"
 

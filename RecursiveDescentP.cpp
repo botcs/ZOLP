@@ -6,15 +6,15 @@
 #define tk_ token::
 
 token * RDparser::parseRightHalfExpr(token * leftChild){
-    auto floatingNode = getNext();
+    auto danglingNode = getNext();
     if( !(accept(tk_ OR) || accept(tk_ AND) ) )
         throw ParseError("Dangling operator collision ...");
 
 
-    floatingNode->left = leftChild;
-    floatingNode->right = parseExpression();
+    danglingNode->left = leftChild;
+    danglingNode->right = parseExpression();
 
-    return floatingNode;
+    return danglingNode;
 }
 
 token * RDparser::parseExpression(){
@@ -49,10 +49,27 @@ token * RDparser::parseUnary(){
     return parseFactor();
 }
 token * RDparser::parseFactor(){
+
     if(accept(tk_ OPEN)){
+        auto startingDepth = parenDepth;
+        ++parenDepth;
+
         auto parenExpr = parseExpression();
-        if(accept(tk_ CLOSE)) return parenExpr;
-        else throw ParseError("Missing paren");
+        if(accept(tk_ CLOSE)) {
+            return parenExpr;
+        }
+
+        while(!complete() && parenDepth != startingDepth){
+            parenExpr = parseRightHalfExpr(parenExpr);
+            if(accept(tk_ CLOSE)) {
+                return parenExpr;
+            }
+        }
+
+
+
+
+        throw ParseError("Missing parentheses");
     }
     if(accept(tk_ TRUE)){
         return getAccepted();
@@ -78,6 +95,29 @@ void RDparser::print(std::ostream& o){
     o << "\n";
 }
 
+std::vector<token*> disassemblyTokens (std::string& T){
+    std::vector<token*> trueTokens;
+//    size_t it = 0;
+//    size_t frame = token::maxTokenLength;
+//    while(it + frame < T.size()){
+//        while(frame)
+//        {
+//            if(token::TokenDict[T.substr(it, frame)]);
+//        }
+//    }
+
+    for(auto p : token::TokenDict){
+        auto pos = T.find(p.first);
+        if(pos != T.size()){
+            trueTokens.push_back(new token( T.substr(0, pos - 1) ));
+            trueTokens.push_back(new token(p.first));
+            T = substr(pos + p.first.size());
+        }
+    }
+
+}
+
+
 RDparser::RDparser(std::stringstream & Buffer, std::ostream& o){
     o << "Parser initialized at " << this << "\n"
       << "\"input\"\t interpreted as\n"
@@ -86,6 +126,9 @@ RDparser::RDparser(std::stringstream & Buffer, std::ostream& o){
 
     while(Buffer >> tokenString){
         o << "\"" << tokenString << "\"\t ";
+        if(!token::TokenDict.count(tokenString)){
+
+        }
         tokens.push_back(new token(tokenString) );
         tokens.back()->print(o);
         o << " ;\n";
@@ -96,8 +139,16 @@ RDparser::RDparser(std::stringstream & Buffer, std::ostream& o){
 
 RDparser::RDparser(std::stringstream & Buffer){
     std::string tokenString;
-    while(Buffer >> tokenString)
+    while(Buffer >> tokenString){
+        if(!token::TokenDict.count(tokenString)){
+            auto trueTokens = disassemblyToken(tokenString);
+            tokens.reserve(tokens.size() + trueTokens.size());
+            tokens.insert(tokens.end(), trueTokens.begin(), trueTokens.end());
+        }
+
         tokens.push_back(new token(tokenString) );
+    }
+
 
 }
 
