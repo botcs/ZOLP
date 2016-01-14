@@ -37,6 +37,7 @@ void AST::parse(std::stringstream& ss){
 
 void AST::parse(std::stringstream& ss, std::ostream& o){
     RDparser parser(ss, o);
+    parser.print(o);
     root = parser.parseExpression();
 
     while(!parser.complete()){

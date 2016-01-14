@@ -7,7 +7,7 @@
 
 token * RDparser::parseRightHalfExpr(token * leftChild){
     auto danglingNode = getNext();
-    if( !(accept(tk_ OR) || accept(tk_ AND) ) )
+    if( !(accept(tk_ OR) || accept(tk_ AND)) )
         throw ParseError("Dangling operator collision ...");
 
 
@@ -56,12 +56,14 @@ token * RDparser::parseFactor(){
 
         auto parenExpr = parseExpression();
         if(accept(tk_ CLOSE)) {
+            --parenDepth;
             return parenExpr;
         }
 
         while(!complete() && parenDepth != startingDepth){
             parenExpr = parseRightHalfExpr(parenExpr);
             if(accept(tk_ CLOSE)) {
+                --parenDepth;
                 return parenExpr;
             }
         }
@@ -92,44 +94,65 @@ void RDparser::print(std::ostream& o){
         t->print(o);
         o << "\"";
     }
-    o << "\n";
+    o << "\n\n";
 }
 
-std::vector<token*> disassemblyTokens (std::string& T){
-    std::vector<token*> trueTokens;
-//    size_t it = 0;
-//    size_t frame = token::maxTokenLength;
-//    while(it + frame < T.size()){
-//        while(frame)
-//        {
-//            if(token::TokenDict[T.substr(it, frame)]);
-//        }
-//    }
+std::vector<token*> RDparser::disassemblyToken (const std::string& T){
 
-    for(auto p : token::TokenDict){
-        auto pos = T.find(p.first);
-        if(pos != T.size()){
-            trueTokens.push_back(new token( T.substr(0, pos - 1) ));
-            trueTokens.push_back(new token(p.first));
-            T = substr(pos + p.first.size());
+    std::vector<token*> trueTokens;
+    size_t start = 0;
+    while(start < T.size()){
+        size_t minPos = T.size();
+        std::string leftMostToken;
+        for(auto p : token::TokenDict){
+            auto pos = T.find(p.first, start);
+            if( pos < minPos ){
+                minPos = pos;
+                leftMostToken = p.first;
+                if(pos == start)
+                    break;
+            }
         }
+
+        if(minPos < T.size()){ //INTERPRETABLE TOKEN FOUND
+            if(minPos > start)
+                trueTokens.push_back(new token(T.substr(start, minPos - start) ));
+
+            trueTokens.push_back(new token(leftMostToken));
+            start = minPos + leftMostToken.size();
+        } else { //INTERPRETING WHOLE RIGHTMOST EXPRESSION AS VARIABLE
+            trueTokens.push_back(new token(T.substr(start) ) );
+            break;
+        }
+
+
+
     }
 
+
+    return trueTokens;
 }
 
 
 RDparser::RDparser(std::stringstream & Buffer, std::ostream& o){
+    ///IMPORTANT! In the verbose version the aggregarated expressions
+    ///(i.e. "(AorBorC)" are depicted as VARIABLES, but are disassembled into
+    ///smaller exceptions if there exists any
+
     o << "Parser initialized at " << this << "\n"
       << "\"input\"\t interpreted as\n"
       << "********************************************\n";
     std::string tokenString;
 
     while(Buffer >> tokenString){
-        o << "\"" << tokenString << "\"\t ";
         if(!token::TokenDict.count(tokenString)){
-
+            std::vector<token*> trueTokens = disassemblyToken(tokenString);
+            tokens.reserve(tokens.size() + trueTokens.size());
+            tokens.insert(tokens.end(), trueTokens.begin(), trueTokens.end());
         }
-        tokens.push_back(new token(tokenString) );
+        else tokens.push_back(new token(tokenString) );
+
+        o << "\"" << tokenString << "\"\t ";
         tokens.back()->print(o);
         o << " ;\n";
     }
@@ -141,12 +164,12 @@ RDparser::RDparser(std::stringstream & Buffer){
     std::string tokenString;
     while(Buffer >> tokenString){
         if(!token::TokenDict.count(tokenString)){
-            auto trueTokens = disassemblyToken(tokenString);
+            std::vector<token*> trueTokens = disassemblyToken(tokenString);
             tokens.reserve(tokens.size() + trueTokens.size());
             tokens.insert(tokens.end(), trueTokens.begin(), trueTokens.end());
         }
 
-        tokens.push_back(new token(tokenString) );
+        else tokens.push_back(new token(tokenString) );
     }
 
 

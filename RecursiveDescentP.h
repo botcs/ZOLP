@@ -70,6 +70,7 @@ struct RDparser
     bool accept(token::T type){
         if (complete()) return false;
         if(getNext()->type == type){
+
             ++index;
             return true;
         }
@@ -77,7 +78,7 @@ struct RDparser
     }
     void print(std::ostream&);
 
-    std::vector<token*> disassemblyToken(std::string& T);
+    static std::vector<token*> disassemblyToken(const std::string& T);
 
     RDparser(std::stringstream & Buffer);
     RDparser(std::stringstream & Buffer, std::ostream&);
