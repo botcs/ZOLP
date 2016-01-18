@@ -29,22 +29,22 @@ void AST::printFancy(std::ostream& o, token* p, int indent){
     }
 
 }
-
+#define INCR_IND 3
 void AST::printRaw(std::ostream& o, token* p, int indent){
     auto i = indent;
     while(i){
-        if (i > 3 )
+        if (i > INCR_IND )
              o << "|  ";
-        else o << "|..";
-        i-=3;
+        else o << "|--";
+        i-=INCR_IND;
     }
     p->print(o);
     o << "\n";
     if(p->isBinary()){
-        printRaw(o, p->left, indent + 3);
-        printRaw(o, p->right, indent + 3);
+        printRaw(o, p->left, indent + INCR_IND);
+        printRaw(o, p->right, indent + INCR_IND);
     } else if (p->isUnary())
-        printRaw(o, p->child, indent + 3);
+        printRaw(o, p->child, indent + INCR_IND);
 
 }
 

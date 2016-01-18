@@ -42,9 +42,9 @@ token * RDparser::parseOr(){
 }
 token * RDparser::parseNot(){
     if(accept(tk_ NOT)){
-        auto realNotNode = getAccepted();
-        realNotNode->child = parseNot();
-        return realNotNode;
+        auto negatedChild = parseNot();
+        negatedChild->negated = !negatedChild->negated;
+        return negatedChild;
     }
     return parseParen();
 }

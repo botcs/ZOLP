@@ -23,7 +23,7 @@ struct token
 
 
     static std::unordered_map<std::string, T> TokenDict;
-    static size_t maxTokenLength;
+    bool negated = false;
 
     union{
         const char* varName; //for VARIABLE representation
@@ -33,46 +33,7 @@ struct token
         };
         token * child;
     };
-    void print(std::ostream& o){
-        switch (type){
-        case TRUE:
-            o << "TRUE";
-            break;
-
-        case FALSE:
-            o << "FALSE";
-            break;
-
-        case VARIABLE:
-            o << '[' << varName << ']';
-            break;
-
-        case NOT:
-            o << "not";
-            break;
-
-        case OR:
-            o << "or";
-            break;
-
-        case AND:
-            o << "and";
-            break;
-
-        case OPEN:
-            o << "OPEN";
-            break;
-
-        case CLOSE:
-            o << "CLOSE";
-            break;
-
-
-
-        default:
-            throw std::logic_error("Unrecognized token Type");
-        }
-    }
+    void print(std::ostream& o);
 
     bool isAtom(){return type == FALSE || type == TRUE || type == VARIABLE;}
     bool isUnary(){return type == NOT;}

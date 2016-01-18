@@ -32,4 +32,45 @@ std::unordered_map<std::string, token::T> token::TokenDict = {
     {")", token::CLOSE},
 };
 
-size_t token::maxTokenLength = 5;
+void token::print(std::ostream& o){
+    if (negated)
+        o << "!";
+    switch (type){
+    case TRUE:
+        o << "TRUE";
+        break;
+
+    case FALSE:
+        o << "FALSE";
+        break;
+
+    case VARIABLE:
+        o << '[' << varName << ']';
+        break;
+
+    case NOT:
+        o << "not";
+        break;
+
+    case OR:
+        o << "or";
+        break;
+
+    case AND:
+        o << "and";
+        break;
+
+    case OPEN:
+        o << "OPEN";
+        break;
+
+    case CLOSE:
+        o << "CLOSE";
+        break;
+
+
+
+    default:
+        throw std::logic_error("Unrecognized token Type");
+    }
+}
