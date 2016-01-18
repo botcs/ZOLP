@@ -16,9 +16,16 @@ int main()
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "third"};
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "not", "not", "true"};
         //rdp.tokens=vector<string>{"first", "and", "second", "and", "third"};
-        stringstream ss("!!( notnot B and C)");
+        stringstream ss("!( notnot A and (B or D) and C)");
         tree.parse(ss, cout);
+
         tree.print(cout);
+
+        tree.atomizeNegation(tree.root);
+
+        cout<<"\n\n AFTER atomizeNegation:\n";
+        tree.print(cout);
+
 
 
 

@@ -67,8 +67,25 @@ void AST::parse(std::stringstream& ss, std::ostream& o){
 
 void AST::atomizeNegation(token* x){
 
-    if(x->type > token::FALSE){ //X IS NOT LEAF
-        if(x->type == token::NOT && x->left->type > token::FALSE){
+    if(!x->isAtom() && x->negated){ //X IS NOT LEAF
+
+        if(x->type == token::OR)
+            x->type = token::AND;
+        else
+            x->type = token::OR;
+
+        if(x->isBinary()){
+            x->negated = false;
+            if(x->left){
+                x->left->negated = !x->left->negated;
+                atomizeNegation(x->left);
+            }
+            if(x->right){
+                x->right->negated = !x->right->negated;
+                atomizeNegation(x->right);
+            }
+
+
 
         }
     } else return;

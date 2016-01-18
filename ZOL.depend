@@ -65,7 +65,7 @@
 1452777777 source:/home/botcs/CPP/ZOLP/tokens.cpp
 	"tokens.h"
 
-1453149368 source:c:\users\zombi\documents\csabi\zolp\main.cpp
+1453150493 source:c:\users\zombi\documents\csabi\zolp\main.cpp
 	<iostream>
 	<iomanip>
 	<sstream>
@@ -95,6 +95,6 @@
 1453149058 source:c:\users\zombi\documents\csabi\zolp\tokens.cpp
 	"tokens.h"
 
-1453149272 source:c:\users\zombi\documents\csabi\zolp\ast.cpp
+1453150358 source:c:\users\zombi\documents\csabi\zolp\ast.cpp
 	"AST.h"
 
