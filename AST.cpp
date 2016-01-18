@@ -31,7 +31,13 @@ void AST::printFancy(std::ostream& o, token* p, int indent){
 }
 
 void AST::printRaw(std::ostream& o, token* p, int indent){
-    o << std::setw(10);
+    auto i = indent;
+    while(i){
+        if (i > 3 )
+             o << "|  ";
+        else o << "|..";
+        i-=3;
+    }
     p->print(o);
     o << "\n";
     if(p->isBinary()){
@@ -44,7 +50,7 @@ void AST::printRaw(std::ostream& o, token* p, int indent){
 
 void AST::parse(std::stringstream& ss){
     RDparser parser(ss);
-    root = parser.parseExpression();
+    root = parser.parseAnd();
     while(!parser.complete())
         root = parser.parseRightHalfExpr(root);
 }
@@ -52,7 +58,7 @@ void AST::parse(std::stringstream& ss){
 void AST::parse(std::stringstream& ss, std::ostream& o){
     RDparser parser(ss, o);
     parser.print(o);
-    root = parser.parseExpression();
+    root = parser.parseAnd();
 
     while(!parser.complete()){
         root = parser.parseRightHalfExpr(root);

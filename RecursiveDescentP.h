@@ -43,10 +43,10 @@ struct RDparser
 {
     token * parseRightHalfExpr(token*);
 
-    token * parseExpression();
-    token * parseTerm();
-    token * parseUnary();
-    token * parseFactor();
+    token * parseAnd();
+    token * parseOr();
+    token * parseNot();
+    token * parseParen();
     token * parseAtom();
 
     std::vector<token*> tokens;

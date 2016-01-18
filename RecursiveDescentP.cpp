@@ -12,16 +12,16 @@ token * RDparser::parseRightHalfExpr(token * leftChild){
 
 
     danglingNode->left = leftChild;
-    danglingNode->right = parseExpression();
+    danglingNode->right = parseAnd();
 
     return danglingNode;
 }
 
-token * RDparser::parseExpression(){
-    auto leftChild = parseTerm();
+token * RDparser::parseAnd(){
+    auto leftChild = parseOr();
     if (accept(tk_ OR)){
         auto realOrNode = getAccepted();
-        auto rightChild  = parseTerm();
+        auto rightChild  = parseOr();
         realOrNode->left = leftChild;
         realOrNode->right = rightChild;
 
@@ -29,32 +29,32 @@ token * RDparser::parseExpression(){
     }
     return leftChild;
 }
-token * RDparser::parseTerm(){
-    auto leftChild = parseUnary();
+token * RDparser::parseOr(){
+    auto leftChild = parseNot();
     if (accept(tk_ AND)){
         auto realAndNode = getAccepted();
-        auto rightChild  = parseUnary();
+        auto rightChild  = parseNot();
         realAndNode->left = leftChild;
         realAndNode->right = rightChild;
         return realAndNode;
     }
     return leftChild;
 }
-token * RDparser::parseUnary(){
+token * RDparser::parseNot(){
     if(accept(tk_ NOT)){
         auto realNotNode = getAccepted();
-        realNotNode->child = parseUnary();
+        realNotNode->child = parseNot();
         return realNotNode;
     }
-    return parseFactor();
+    return parseParen();
 }
-token * RDparser::parseFactor(){
+token * RDparser::parseParen(){
 
     if(accept(tk_ OPEN)){
         auto startingDepth = parenDepth;
         ++parenDepth;
 
-        auto parenExpr = parseExpression();
+        auto parenExpr = parseAnd();
         if(accept(tk_ CLOSE)) {
             --parenDepth;
             return parenExpr;
