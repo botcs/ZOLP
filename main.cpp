@@ -16,7 +16,7 @@ int main()
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "third"};
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "not", "not", "true"};
         //rdp.tokens=vector<string>{"first", "and", "second", "and", "third"};
-        stringstream ss("!( not B and C)");
+        stringstream ss("!!( notnot B and C)");
         tree.parse(ss, cout);
         tree.print(cout);
 
