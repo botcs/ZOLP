@@ -121,7 +121,6 @@ RDparser::RDparser(std::stringstream & Buffer, std::ostream& o){
         o << "\"" << tokenString << "\"\t ";
         tokens.back()->print(o);
         o << " ;\n";
-        print(o);
         o << "\n";
     }
     o << "Factorizing ended\n\n";

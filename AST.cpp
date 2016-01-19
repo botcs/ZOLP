@@ -128,21 +128,13 @@ void AST::postDestruct(token *p){
 }
 
 
-#define INCR_IND 3
-void AST::printRaw(std::ostream& o, token* p, int indent){
-    auto i = indent;
-    while(i){
-        if (i > INCR_IND )
-             o << "|   ";
-        else o << "'--";
-        i-=INCR_IND;
-    }
+void AST::printRaw(std::ostream& o, token* p, const std::string& prefix, bool isTail){
+    o << prefix + (isTail ? "'-- " : "|-- ");
     p->print(o);
-    o << "\n";
+    o << std::endl;
     if(p->isBinary()){
-        printRaw(o, p->right, indent + INCR_IND);
-        printRaw(o, p->left, indent + INCR_IND);
-    } else if (p->isUnary())
-        printRaw(o, p->child, indent + INCR_IND);
+        printRaw(o, p->left, prefix + (isTail ? "    " : "|   "), false);
+        printRaw(o, p->right, prefix + (isTail ? "    " : "|   "), true);
 
+    }
 }

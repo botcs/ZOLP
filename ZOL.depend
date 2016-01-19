@@ -4,17 +4,17 @@
 	<exception>
 	<vector>
 
-1452741617 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\main.cpp
+1453245587 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\main.cpp
 	<iostream>
 	<iomanip>
 	<sstream>
 	<string>
 	"AST.h"
 
-1452737722 c:\documents and settings\rendszergazda\asztal\csabbi\zolp\ast.h
+1453246205 c:\documents and settings\rendszergazda\asztal\csabbi\zolp\ast.h
 	"RecursiveDescentP.h"
 
-1452739871 c:\documents and settings\rendszergazda\asztal\csabbi\zolp\recursivedescentp.h
+1453244814 c:\documents and settings\rendszergazda\asztal\csabbi\zolp\recursivedescentp.h
 	<iostream>
 	<iomanip>
 	<sstream>
@@ -23,14 +23,19 @@
 	<exception>
 	"tokens.h"
 
-1452741304 c:\documents and settings\rendszergazda\asztal\csabbi\zolp\tokens.h
+1453244814 c:\documents and settings\rendszergazda\asztal\csabbi\zolp\tokens.h
 	<unordered_map>
+	<exception>
+	<iostream>
 
-1452740773 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\recursivedescentp.cpp
+1453245421 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\recursivedescentp.cpp
 	"RecursiveDescentP.h"
+	"LexAnalyser.h"
 
-1452737720 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\ast.cpp
+1453246185 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\ast.cpp
 	"AST.h"
+	<exception>
+	<algorithm>
 
 1453235256 source:/home/botcs/CPP/ZOLP/main.cpp
 	<iostream>
@@ -102,4 +107,9 @@
 	"AST.h"
 
 1453231017 /home/botcs/CPP/ZOLP/LexAnalyser.h
+
+1453244814 c:\documents and settings\rendszergazda\asztal\csabbi\zolp\lexanalyser.h
+
+1453244814 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\tokens.cpp
+	"tokens.h"
 
