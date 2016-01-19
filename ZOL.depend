@@ -32,17 +32,17 @@
 1452737720 source:c:\documents and settings\rendszergazda\asztal\csabbi\zolp\ast.cpp
 	"AST.h"
 
-1452806925 source:/home/botcs/CPP/ZOLP/main.cpp
+1453235256 source:/home/botcs/CPP/ZOLP/main.cpp
 	<iostream>
 	<iomanip>
 	<sstream>
 	<string>
 	"AST.h"
 
-1452806994 /home/botcs/CPP/ZOLP/AST.h
+1453227028 /home/botcs/CPP/ZOLP/AST.h
 	"RecursiveDescentP.h"
 
-1452780948 /home/botcs/CPP/ZOLP/RecursiveDescentP.h
+1453230926 /home/botcs/CPP/ZOLP/RecursiveDescentP.h
 	<iostream>
 	<iomanip>
 	<sstream>
@@ -51,18 +51,21 @@
 	<exception>
 	"tokens.h"
 
-1452805921 /home/botcs/CPP/ZOLP/tokens.h
+1453230946 /home/botcs/CPP/ZOLP/tokens.h
 	<unordered_map>
 	<exception>
 	<iostream>
 
-1452807478 source:/home/botcs/CPP/ZOLP/AST.cpp
+1453235344 source:/home/botcs/CPP/ZOLP/AST.cpp
 	"AST.h"
+	<exception>
+	<algorithm>
 
-1452806182 source:/home/botcs/CPP/ZOLP/RecursiveDescentP.cpp
+1453231034 source:/home/botcs/CPP/ZOLP/RecursiveDescentP.cpp
 	"RecursiveDescentP.h"
+	"LexAnalyser.h"
 
-1452777777 source:/home/botcs/CPP/ZOLP/tokens.cpp
+1453206048 source:/home/botcs/CPP/ZOLP/tokens.cpp
 	"tokens.h"
 
 1453150493 source:c:\users\zombi\documents\csabi\zolp\main.cpp
@@ -97,4 +100,6 @@
 
 1453150358 source:c:\users\zombi\documents\csabi\zolp\ast.cpp
 	"AST.h"
+
+1453231017 /home/botcs/CPP/ZOLP/LexAnalyser.h
 

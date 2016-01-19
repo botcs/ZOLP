@@ -15,7 +15,7 @@ class ParseError : public std::exception {
         return _detail;
     };
 public:
-    ParseError( std::string detail) : _detail(detail.c_str()){}
+    ParseError( const std::string& detail) : _detail(detail.c_str()){}
 };
 
 
@@ -77,8 +77,6 @@ struct RDparser
         return false;
     }
     void print(std::ostream&);
-
-    static std::vector<token*> disassemblyToken(const std::string& T);
 
     RDparser(std::stringstream & Buffer);
     RDparser(std::stringstream & Buffer, std::ostream&);

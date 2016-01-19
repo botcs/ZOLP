@@ -18,7 +18,10 @@ struct AST //Abstract Syntax Tree
     void parse(std::stringstream& ss, std::ostream& o);
 
     void atomizeNegation(token* x);
+    void atomizeNegation(){atomizeNegation(root);}
 
+    void CNF(token* x);
+    void CNF(){CNF(root);}
 
     ~AST(){postDestruct(root);}
 

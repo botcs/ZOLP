@@ -1,4 +1,42 @@
 #include "AST.h"
+#include <exception>
+#include <algorithm>
+
+class TreeError : public std::exception {
+    const char* _detail;
+    const char* what() const throw(){
+        return _detail;
+    };
+public:
+    TreeError(const std::string& detail) : _detail(detail.c_str()){}
+};
+
+
+void AST::CNF(token*x){
+    //std::cout<<x->type<<"ASD\n";
+    if(!x->isBinary()) return;
+    if(x->type == token::OR){
+        if(x->left->type == token::AND){
+            std::swap(x->type, x->left->type);
+            auto y = new token(token::OR);
+            y->left = x->left->right;
+            y->right = x->right;
+            x->left->right = x->right;
+            x->right = y;
+        }
+        else if(x->right->type == token::AND){
+            std::swap(x->type, x->right->type);
+            auto y = new token(token::OR);
+            y->right = x->right->left;
+            y->left = x->left;
+            x->right->left = x->left;
+            x->left = y;
+        }
+    }
+    CNF(x->left);
+    CNF(x->right);
+}
+
 
 void AST::printFancy(std::ostream& o, token* p, int indent){
     if(p->isBinary()) {
@@ -29,24 +67,7 @@ void AST::printFancy(std::ostream& o, token* p, int indent){
     }
 
 }
-#define INCR_IND 3
-void AST::printRaw(std::ostream& o, token* p, int indent){
-    auto i = indent;
-    while(i){
-        if (i > INCR_IND )
-             o << "|  ";
-        else o << "|--";
-        i-=INCR_IND;
-    }
-    p->print(o);
-    o << "\n";
-    if(p->isBinary()){
-        printRaw(o, p->left, indent + INCR_IND);
-        printRaw(o, p->right, indent + INCR_IND);
-    } else if (p->isUnary())
-        printRaw(o, p->child, indent + INCR_IND);
 
-}
 
 void AST::parse(std::stringstream& ss){
     RDparser parser(ss);
@@ -67,28 +88,36 @@ void AST::parse(std::stringstream& ss, std::ostream& o){
 
 void AST::atomizeNegation(token* x){
 
-    if(!x->isAtom() && x->negated){ //X IS NOT LEAF
-
-        if(x->type == token::OR)
-            x->type = token::AND;
-        else
-            x->type = token::OR;
+    if(!x->isAtom()){ //X IS NOT LEAF
 
         if(x->isBinary()){
-            x->negated = false;
-            if(x->left){
-                x->left->negated = !x->left->negated;
-                atomizeNegation(x->left);
+            if(x->negated){
+                if(x->type == token::OR)
+                    x->type = token::AND;
+                else
+                    x->type = token::OR;
+
+                x->negated = false;
+                if(x->left)
+                    x->left->negated ^= true;
+                else TreeError("Syntax Tree Error: missing left child!");
+
+                if(x->right)
+                    x->right->negated ^= true;
+                else TreeError("Syntax Tree Error: missing right child!");
             }
-            if(x->right){
-                x->right->negated = !x->right->negated;
-                atomizeNegation(x->right);
-            }
 
-
-
+            atomizeNegation(x->left);
+            atomizeNegation(x->right);
         }
-    } else return;
+//         else if(x->isUnary()){
+//
+//        }
+        ///BECAME OBSOLETE AFTER CORRECTING PARSER GRAMMAR
+        ///excluding 'NOT' nodes in tree representation
+
+    }
+
 }
 
 void AST::postDestruct(token *p){
@@ -96,4 +125,24 @@ void AST::postDestruct(token *p){
     if (p->type >= token::OR) postDestruct(p->left); //NOT LEAF
     if (p->type > token::OR) postDestruct(p->right); //NOT UNARY OR LEAF
     delete p;
+}
+
+
+#define INCR_IND 3
+void AST::printRaw(std::ostream& o, token* p, int indent){
+    auto i = indent;
+    while(i){
+        if (i > INCR_IND )
+             o << "|   ";
+        else o << "'--";
+        i-=INCR_IND;
+    }
+    p->print(o);
+    o << "\n";
+    if(p->isBinary()){
+        printRaw(o, p->right, indent + INCR_IND);
+        printRaw(o, p->left, indent + INCR_IND);
+    } else if (p->isUnary())
+        printRaw(o, p->child, indent + INCR_IND);
+
 }
