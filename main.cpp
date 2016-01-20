@@ -7,6 +7,7 @@
 
 #include "AST.h"
 #include <fstream>
+#include <ctime>
 int main()
 {
 
@@ -15,8 +16,10 @@ int main()
         AST tree;
         auto& OUT = cout;
 
-        stringstream ss("! [(a and b) or (!b and c) ] & [(A and B)or(C and D)]");
+        stringstream ss("aorboraorboraorb and c");
+        auto t = clock();
         tree.parse(ss, OUT);
+        cout << clock() - t;
 
         OUT<<"\n\n INITIAL Parsing:\n";
         tree.print(OUT);

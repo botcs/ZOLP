@@ -12,6 +12,7 @@ struct AST //Abstract Syntax Tree
 
         node(shared_ptr<token> embed):data(embed){};
         node(token::T _type):data(make_shared<token>(_type)){};
+        node(const node& copy):data(make_shared<token> (*copy.data) ){}
     };
     shared_ptr<node> root = nullptr;
 
@@ -22,8 +23,8 @@ struct AST //Abstract Syntax Tree
     static shared_ptr<node> copy(shared_ptr<node> copyRoot);
 
     void printRaw(ostream& o, shared_ptr<node> p, const string& prefix = "", bool isTail = true);
-    void parse(stringstream& ss);
-    void parse(stringstream& ss, ostream& o);
+    void parse(istream& i);
+    void parse(istream& i, ostream& o);
 
     void atomizeNegation(shared_ptr<node> x);
     void atomizeNegation(){atomizeNegation(root);}

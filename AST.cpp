@@ -15,13 +15,12 @@ public:
 shared_ptr<AST::node> AST::copy(shared_ptr<node> copyFrom){
     if(copyFrom == nullptr) return nullptr;
 
-    shared_ptr<node> newRoot = make_shared<node>(make_shared<token> (*copyFrom->data));
+    shared_ptr<node> newRoot = make_shared<node>(*copyFrom);
     newRoot->left = copy(copyFrom->left);
     newRoot->right = copy(copyFrom->right);
     return newRoot;
 }
 
-int a = 0;
 void AST::CNF(shared_ptr<node> x){
     if(x == nullptr || !(x->left && x->right) ) return;
     if(x->data->type == token::OR){
@@ -44,19 +43,17 @@ void AST::CNF(shared_ptr<node> x){
             x->left = y;
         }
     }
-    std::cout<< "\n\nSTEP " << ++a << ": \n";
-    print(std::cout);
     CNF(x->left);
     CNF(x->right);
 }
 
 
-void AST::parse(std::stringstream& ss){
+void AST::parse(std::istream& ss){
     RDparser parser(ss);
     root = parser.parseExpression();
 }
 
-void AST::parse(std::stringstream& ss, std::ostream& o){
+void AST::parse(std::istream& ss, std::ostream& o){
     RDparser parser(ss, o);
     parser.print(o);
     root = parser.parseAnd();

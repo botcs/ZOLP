@@ -100,7 +100,7 @@ void RDparser::print(std::ostream& o){
 
 
 
-RDparser::RDparser(std::stringstream & Buffer, std::ostream& o){
+RDparser::RDparser(std::istream & Buffer, std::ostream& o){
     ///IMPORTANT! In the verbose version the aggregarated expressions
     ///(i.e. "(AorBorC)" are depicted as VARIABLES, but are disassembled into
     ///smaller exceptions if there exists any
@@ -127,7 +127,7 @@ RDparser::RDparser(std::stringstream & Buffer, std::ostream& o){
 
 }
 
-RDparser::RDparser(std::stringstream & Buffer){
+RDparser::RDparser(std::istream & Buffer){
     std::string tokenString;
     while(Buffer >> tokenString){
         if(!token::TokenDict.count(tokenString)){
