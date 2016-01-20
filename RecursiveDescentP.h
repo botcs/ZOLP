@@ -42,17 +42,17 @@ struct RDparser
     size_t index = 0;
     size_t parenDepth = 0;
 
-    node_p getNext(){
+    shared_ptr<token> getNext(){
         if(index >= tokens.size())
             throw ParseError("Overindexing");
-        return make_shared<AST::node>(*tokens[index]);
+        return tokens[index];
     }
 
     node_p getAccepted(){
         if(index-1 >= tokens.size())
             throw ParseError("Overindexing");
 
-        return make_shared<AST::node>(*tokens[index-1]);
+        return make_shared<AST::node>(tokens[index-1]);
     }
 
     bool complete(){return tokens.size() == index;}

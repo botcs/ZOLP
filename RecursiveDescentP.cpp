@@ -6,11 +6,11 @@
 
 
 node_p RDparser::parseRightHalfExpr(node_p leftChild){
-    auto danglingNode = getNext();
+
     if( !(accept(token::OR) || accept(token::AND)) )
         throw ParseError("Dangling operator collision ...");
 
-
+    auto danglingNode = getAccepted();
     danglingNode->left = leftChild;
     danglingNode->right = parseAnd();
 
@@ -43,7 +43,7 @@ std::shared_ptr<AST::node> RDparser::parseOr(){
 std::shared_ptr<AST::node> RDparser::parseNot(){
     if(accept(token::NOT)){
         auto negatedChild = parseNot();
-        negatedChild->negated = !negatedChild->negated;
+        negatedChild->data->negated = !negatedChild->data->negated;
         return negatedChild;
     }
     return parseParen();

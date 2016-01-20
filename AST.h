@@ -5,11 +5,13 @@
 using namespace std;
 struct AST //Abstract Syntax Tree
 {
-    struct node : public token{
+    struct node{
+        shared_ptr<token> data;
         shared_ptr<node> left = nullptr;
         shared_ptr<node> right = nullptr;
-        node(token::T _type) : token(_type){};
-        node(token embed) : token(embed){};
+
+        node(shared_ptr<token> embed):data(embed){};
+        node(token::T _type):data(make_shared<token>(_type)){};
     };
     shared_ptr<node> root = nullptr;
 
