@@ -11,66 +11,32 @@ public:
     TreeError(const std::string& detail) : _detail(detail.c_str()){}
 };
 
-int a = 0;
 void AST::CNF(token*x){
-    ++a;
     //std::cout<<x->type<<"ASD\n";
     if(!x->isBinary()) return;
     if(x->type == token::OR){
         if(x->left->type == token::AND){
-            std::swap(x->type, x->left->type);
+            x->left->type = token::OR;
+            x->type = token::AND;
             auto y = new token(token::OR);
             y->left = x->left->right;
-            y->right = x->right;
+            y->right = new token(*x->right);
             x->left->right = x->right;
             x->right = y;
         }
-        else if(x->right->type == token::AND){
-            std::swap(x->type, x->right->type);
+        if(x->right->type == token::AND){
+            x->right->type = token::OR;
+            x->type = token::AND;
             auto y = new token(token::OR);
             y->right = x->right->left;
-            y->left = x->left;
+            y->left = new token(*x->left);
             x->right->left = x->left;
             x->left = y;
         }
     }
 
-    std::cout << "\n\nSTEP " << a << ": \n";
-    print(std::cout);
-
     CNF(x->left);
     CNF(x->right);
-}
-
-
-void AST::printFancy(std::ostream& o, token* p, int indent){
-    if(p->isBinary()) {
-        if(p->right) {
-            printFancy(o, p->right, indent+5);
-        }
-        if (indent) {
-            o << std::setw(indent) << ' ';
-        }
-
-        if (p->right) o<<" /\n" ;
-    }
-
-    if (indent) o << std::setw(indent) << ' ';
-    p->print(o);
-    o << "\n";
-
-    if(p->isBinary()) {
-        if(p->left) {
-            o << std::setw(indent) << ' ' <<" \\\n";
-            printFancy(o, p->left, indent+5);
-        }
-    } else if (p->isUnary()){
-        if(p->child){
-            o << std::setw(indent) << ' ' <<" \\\n";
-            printFancy(o, p->child, indent+5);
-        }
-    }
-
 }
 
 

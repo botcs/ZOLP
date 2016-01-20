@@ -8,11 +8,9 @@ struct AST //Abstract Syntax Tree
     token *root = nullptr;
 
     void print(std::ostream& o){
-
         printRaw(o, root);
     }
 
-    void printFancy(std::ostream& o, token* p, int indent = 0);
     void printRaw(std::ostream& o, token* p, const std::string& prefix = "", bool isTail = true);
     void parse(std::stringstream& ss);
     void parse(std::stringstream& ss, std::ostream& o);

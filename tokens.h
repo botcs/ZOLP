@@ -31,7 +31,6 @@ struct token
             token * left;
             token * right;
         };
-        token * child;
     //};
     void print(std::ostream& o);
 
