@@ -7,6 +7,7 @@
 #include <vector>
 #include <exception>
 
+#include "AST.h"
 #include "tokens.h"
 
 class ParseError : public std::exception {
@@ -19,50 +20,39 @@ public:
 };
 
 
-
-//
-//GRAMMAR:
-//expression -> term or term
-//expression -> term
-//
-//term -> unary and unary
-//term -> unary
-//
-//unary -> not factor
-//uanry -> factor
-//
-//factor -> ( expression )
-//factor -> atom
-//
-//atom -> true
-//atom -> false
-//atom -> variable
-
-
+using node_p = std::shared_ptr<AST::node>;
 struct RDparser
 {
-    token * parseRightHalfExpr(token*);
+    node_p parseExpression(){
+        auto expr = parseAnd();
+        while(!complete())
+            expr = parseRightHalfExpr(expr);
 
-    token * parseAnd();
-    token * parseOr();
-    token * parseNot();
-    token * parseParen();
-    token * parseAtom();
+        return expr;
+    }
 
-    std::vector<token*> tokens;
+    node_p parseRightHalfExpr(node_p);
+    node_p parseAnd();
+    node_p parseOr();
+    node_p parseNot();
+    node_p parseParen();
+    node_p parseAtom();
+
+    std::vector<std::shared_ptr<token> > tokens;
     size_t index = 0;
     size_t parenDepth = 0;
 
-    token * getNext(){
+    node_p getNext(){
         if(index >= tokens.size())
             throw ParseError("Overindexing");
-        return tokens[index];
+        return make_shared<AST::node>(*tokens[index]);
     }
 
-    token * getAccepted(){
+    node_p getAccepted(){
         if(index-1 >= tokens.size())
             throw ParseError("Overindexing");
-        return tokens[index-1];
+
+        return make_shared<AST::node>(*tokens[index-1]);
     }
 
     bool complete(){return tokens.size() == index;}
@@ -70,7 +60,6 @@ struct RDparser
     bool accept(token::T type){
         if (complete()) return false;
         if(getNext()->type == type){
-
             ++index;
             return true;
         }

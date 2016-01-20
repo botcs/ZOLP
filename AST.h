@@ -1,29 +1,35 @@
 #ifndef AST_H_INCLUDED
 #define AST_H_INCLUDED
-
-#include "RecursiveDescentP.h"
-
+#include <memory>
+#include "tokens.h"
+using namespace std;
 struct AST //Abstract Syntax Tree
 {
-    token *root = nullptr;
+    struct node : public token{
+        shared_ptr<node> left = nullptr;
+        shared_ptr<node> right = nullptr;
+        node(token::T _type) : token(_type){};
+        node(token embed) : token(embed){};
+    };
+    shared_ptr<node> root = nullptr;
 
-    void print(std::ostream& o){
+    void print(ostream& o){
         printRaw(o, root);
     }
 
-    void printRaw(std::ostream& o, token* p, const std::string& prefix = "", bool isTail = true);
-    void parse(std::stringstream& ss);
-    void parse(std::stringstream& ss, std::ostream& o);
+    void printRaw(ostream& o, shared_ptr<node> p, const string& prefix = "", bool isTail = true);
+    void parse(stringstream& ss);
+    void parse(stringstream& ss, ostream& o);
 
-    void atomizeNegation(token* x);
+    void atomizeNegation(shared_ptr<node> x);
     void atomizeNegation(){atomizeNegation(root);}
 
-    void CNF(token* x);
+    void CNF(shared_ptr<node> x);
     void CNF(){CNF(root);}
 
     ~AST(){postDestruct(root);}
 
-    void postDestruct(token *x);
+    void postDestruct(shared_ptr<node> x);
 };
 
 #endif // AST_H_INCLUDED

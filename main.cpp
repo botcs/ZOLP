@@ -15,7 +15,7 @@ int main()
         AST tree;
         auto& OUT = cout;
 
-        stringstream ss("![(a and b) or (!b and c)] & [(A and B) or (C and D)]");
+        stringstream ss("A or B");
         tree.parse(ss, OUT);
 
         OUT<<"\n\n INITIAL Parsing:\n";

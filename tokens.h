@@ -25,13 +25,7 @@ struct token
     static std::unordered_map<std::string, T> TokenDict;
     bool negated = false;
 
-    //union{
-        std::string varName; //for VARIABLE representation
-        struct{
-            token * left;
-            token * right;
-        };
-    //};
+    std::string varName;
     void print(std::ostream& o);
 
     bool isAtom(){return type == FALSE || type == TRUE || type == VARIABLE;}

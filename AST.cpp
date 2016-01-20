@@ -1,4 +1,5 @@
 #include "AST.h"
+#include "RecursiveDescentP.h"
 #include <exception>
 #include <algorithm>
 
@@ -11,25 +12,25 @@ public:
     TreeError(const std::string& detail) : _detail(detail.c_str()){}
 };
 
-void AST::CNF(token*x){
+void AST::CNF(shared_ptr<node> x){
     //std::cout<<x->type<<"ASD\n";
     if(!x->isBinary()) return;
     if(x->type == token::OR){
         if(x->left->type == token::AND){
             x->left->type = token::OR;
             x->type = token::AND;
-            auto y = new token(token::OR);
+            auto y = make_shared<node>(token::OR);
             y->left = x->left->right;
-            y->right = new token(*x->right);
+            y->right = make_shared<node>(*x->right);
             x->left->right = x->right;
             x->right = y;
         }
         if(x->right->type == token::AND){
             x->right->type = token::OR;
             x->type = token::AND;
-            auto y = new token(token::OR);
+            auto y = make_shared<node>(token::OR);
             y->right = x->right->left;
-            y->left = new token(*x->left);
+            y->left = make_shared<node>(*x->left);
             x->right->left = x->left;
             x->left = y;
         }
@@ -42,9 +43,7 @@ void AST::CNF(token*x){
 
 void AST::parse(std::stringstream& ss){
     RDparser parser(ss);
-    root = parser.parseAnd();
-    while(!parser.complete())
-        root = parser.parseRightHalfExpr(root);
+    root = parser.parseExpression();
 }
 
 void AST::parse(std::stringstream& ss, std::ostream& o){
@@ -57,7 +56,7 @@ void AST::parse(std::stringstream& ss, std::ostream& o){
     }
 }
 
-void AST::atomizeNegation(token* x){
+void AST::atomizeNegation(shared_ptr<node> x){
 
     if(!x->isAtom()){ //X IS NOT LEAF
 
@@ -81,25 +80,18 @@ void AST::atomizeNegation(token* x){
             atomizeNegation(x->left);
             atomizeNegation(x->right);
         }
-//         else if(x->isUnary()){
-//
-//        }
-        ///BECAME OBSOLETE AFTER CORRECTING PARSER GRAMMAR
-        ///excluding 'NOT' nodes in tree representation
-
     }
 
 }
 
-void AST::postDestruct(token *p){
+void AST::postDestruct(shared_ptr<node> p){
     if (p == nullptr) return;
-    if (p->type >= token::OR) postDestruct(p->left); //NOT LEAF
-    if (p->type > token::OR) postDestruct(p->right); //NOT UNARY OR LEAF
-    delete p;
+    postDestruct(p->left);
+    postDestruct(p->right);
 }
 
 
-void AST::printRaw(std::ostream& o, token* p, const std::string& prefix, bool isTail){
+void AST::printRaw(std::ostream& o, std::shared_ptr<node> p, const std::string& prefix, bool isTail){
 
     o << prefix + (prefix.empty() ? "    " : (isTail ? "+-- " : "|-- ") );
 
