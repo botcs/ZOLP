@@ -6,6 +6,7 @@ The parser is basically Recursive Descend Parser while I maintain the parsed tok
 a raw depiction of what this program makes:
 INPUT: 
   ![(a and b) or (!b and c)] & [(A and B) or (C and D)]
+  
 OUTPUT:
   see TREE.txt
 
