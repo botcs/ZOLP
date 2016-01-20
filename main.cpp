@@ -13,22 +13,22 @@ int main()
     using namespace std;
     try{
         AST tree;
-        //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "third"};
-        //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "not", "not", "true"};
-        //rdp.tokens=vector<string>{"first", "and", "second", "and", "third"};
+        auto& OUT = cout;
+
         stringstream ss("![(a and b) or (!b and c)] & [(A and B) or (C and D)]");
-        tree.parse(ss, cout);
+        tree.parse(ss, OUT);
 
-        cout<<"\n\n INITIAL Parsing:\n";
-        tree.print(cout);
+        OUT<<"\n\n INITIAL Parsing:\n";
+        tree.print(OUT);
 
-        cout<<"\n\n AFTER atomizeNegation:\n";
+        OUT<<"\n\n AFTER atomizeNegation:\n";
         tree.atomizeNegation(tree.root);
-        tree.print(cout);
+        tree.print(OUT);
 
-        cout<<"\n\n AFTER CNF:\n";
+
+        OUT<<"\n\n AFTER CNF:\n";
         tree.CNF(tree.root);
-        tree.print(cout);
+        tree.print(OUT);
 
 
 
