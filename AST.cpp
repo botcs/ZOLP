@@ -11,8 +11,9 @@ class TreeError : public std::exception {
 public:
     TreeError(const std::string& detail) : _detail(detail.c_str()){}
 };
-
+int a = 0;
 void AST::CNF(shared_ptr<node> x){
+    if(x == nullptr) return;
     if(x->data->type == token::OR){
         if(x->left->data->type == token::AND){
             x->left->data->type = token::OR;
@@ -33,7 +34,8 @@ void AST::CNF(shared_ptr<node> x){
             x->left = y;
         }
     }
-
+    /*std::cout<< "\n\nSTEP " << ++a << ": \n";
+    print(std::cout);*/
     CNF(x->left);
     CNF(x->right);
 }
@@ -55,7 +57,7 @@ void AST::parse(std::stringstream& ss, std::ostream& o){
 }
 
 void AST::atomizeNegation(shared_ptr<node> x){
-
+    if(x == nullptr || !(x->left && x->right) ) return;
     if(x->data->negated){
         if(x->data->type == token::OR)
             x->data->type = token::AND;
@@ -72,9 +74,10 @@ void AST::atomizeNegation(shared_ptr<node> x){
         else TreeError("Syntax Tree Error: missing right child!");
     }
 
+    std::cout<< "\n\nSTEP " << ++a << ": \n";
+    print(std::cout);
     atomizeNegation(x->left);
     atomizeNegation(x->right);
-
 
 }
 
