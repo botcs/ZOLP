@@ -5,19 +5,19 @@
 #include "LexAnalyser.h"
 
 
-token * RDparser::parseRightHalfExpr(token * leftChild){
-    auto danglingNode = getNext();
+node_p RDparser::parseRightHalfExpr(node_p leftChild){
+
     if( !(accept(token::OR) || accept(token::AND)) )
         throw ParseError("Dangling operator collision ...");
 
-
+    auto danglingNode = getAccepted();
     danglingNode->left = leftChild;
     danglingNode->right = parseAnd();
 
     return danglingNode;
 }
 
-token * RDparser::parseAnd(){
+std::shared_ptr<AST::node> RDparser::parseAnd(){
     auto leftChild = parseOr();
     if (accept(token::OR)){
         auto realOrNode = getAccepted();
@@ -29,7 +29,7 @@ token * RDparser::parseAnd(){
     }
     return leftChild;
 }
-token * RDparser::parseOr(){
+std::shared_ptr<AST::node> RDparser::parseOr(){
     auto leftChild = parseNot();
     if (accept(token::AND)){
         auto realAndNode = getAccepted();
@@ -40,15 +40,15 @@ token * RDparser::parseOr(){
     }
     return leftChild;
 }
-token * RDparser::parseNot(){
+std::shared_ptr<AST::node> RDparser::parseNot(){
     if(accept(token::NOT)){
         auto negatedChild = parseNot();
-        negatedChild->negated = !negatedChild->negated;
+        negatedChild->data->negated = !negatedChild->data->negated;
         return negatedChild;
     }
     return parseParen();
 }
-token * RDparser::parseParen(){
+std::shared_ptr<AST::node> RDparser::parseParen(){
 
     if(accept(token::OPEN)){
         auto startingDepth = parenDepth;
@@ -112,11 +112,11 @@ RDparser::RDparser(std::stringstream & Buffer, std::ostream& o){
 
     while(Buffer >> tokenString){
         if(!token::TokenDict.count(tokenString)){
-            std::vector<token*> trueTokens = Tokenize(tokenString);
+            auto trueTokens = Tokenize(tokenString);
             tokens.reserve(tokens.size() + trueTokens.size());
             tokens.insert(tokens.end(), trueTokens.begin(), trueTokens.end());
         }
-        else tokens.push_back(new token(tokenString) );
+        else tokens.emplace_back(make_shared<token>(tokenString));
 
         o << "\"" << tokenString << "\"\t ";
         tokens.back()->print(o);
@@ -131,12 +131,12 @@ RDparser::RDparser(std::stringstream & Buffer){
     std::string tokenString;
     while(Buffer >> tokenString){
         if(!token::TokenDict.count(tokenString)){
-            std::vector<token*> trueTokens = Tokenize(tokenString);
+            auto trueTokens = Tokenize(tokenString);
             tokens.reserve(tokens.size() + trueTokens.size());
             tokens.insert(tokens.end(), trueTokens.begin(), trueTokens.end());
         }
 
-        else tokens.push_back(new token(tokenString) );
+        else tokens.emplace_back(make_shared<token>(tokenString));
     }
 
 

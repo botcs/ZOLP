@@ -1,4 +1,5 @@
 #include "AST.h"
+#include "RecursiveDescentP.h"
 #include <exception>
 #include <algorithm>
 
@@ -10,31 +11,31 @@ class TreeError : public std::exception {
 public:
     TreeError(const std::string& detail) : _detail(detail.c_str()){}
 };
-
-void AST::CNF(token*x){
-    //std::cout<<x->type<<"ASD\n";
-    if(!x->isBinary()) return;
-    if(x->type == token::OR){
-        if(x->left->type == token::AND){
-            x->left->type = token::OR;
-            x->type = token::AND;
-            auto y = new token(token::OR);
+int a = 0;
+void AST::CNF(shared_ptr<node> x){
+    if(x == nullptr) return;
+    if(x->data->type == token::OR){
+        if(x->left->data->type == token::AND){
+            x->left->data->type = token::OR;
+            x->data->type = token::AND;
+            auto y = make_shared<node>(token::OR);
             y->left = x->left->right;
-            y->right = new token(*x->right);
+            y->right = make_shared<node>(*x->right);
             x->left->right = x->right;
             x->right = y;
         }
-        if(x->right->type == token::AND){
-            x->right->type = token::OR;
-            x->type = token::AND;
-            auto y = new token(token::OR);
+        if(x->right->data->type == token::AND){
+            x->right->data->type = token::OR;
+            x->data->type = token::AND;
+            auto y = make_shared<node>(token::OR);
             y->right = x->right->left;
-            y->left = new token(*x->left);
+            y->left = make_shared<node>(*x->left);
             x->right->left = x->left;
             x->left = y;
         }
     }
-
+    /*std::cout<< "\n\nSTEP " << ++a << ": \n";
+    print(std::cout);*/
     CNF(x->left);
     CNF(x->right);
 }
@@ -42,9 +43,7 @@ void AST::CNF(token*x){
 
 void AST::parse(std::stringstream& ss){
     RDparser parser(ss);
-    root = parser.parseAnd();
-    while(!parser.complete())
-        root = parser.parseRightHalfExpr(root);
+    root = parser.parseExpression();
 }
 
 void AST::parse(std::stringstream& ss, std::ostream& o){
@@ -57,57 +56,45 @@ void AST::parse(std::stringstream& ss, std::ostream& o){
     }
 }
 
-void AST::atomizeNegation(token* x){
+void AST::atomizeNegation(shared_ptr<node> x){
+    if(x == nullptr || !(x->left && x->right) ) return;
+    if(x->data->negated){
+        if(x->data->type == token::OR)
+            x->data->type = token::AND;
+        else
+            x->data->type = token::OR;
 
-    if(!x->isAtom()){ //X IS NOT LEAF
+        x->data->negated = false;
+        if(x->left)
+            x->left->data->negated ^= true;
+        else TreeError("Syntax Tree Error: missing left child!");
 
-        if(x->isBinary()){
-            if(x->negated){
-                if(x->type == token::OR)
-                    x->type = token::AND;
-                else
-                    x->type = token::OR;
-
-                x->negated = false;
-                if(x->left)
-                    x->left->negated ^= true;
-                else TreeError("Syntax Tree Error: missing left child!");
-
-                if(x->right)
-                    x->right->negated ^= true;
-                else TreeError("Syntax Tree Error: missing right child!");
-            }
-
-            atomizeNegation(x->left);
-            atomizeNegation(x->right);
-        }
-//         else if(x->isUnary()){
-//
-//        }
-        ///BECAME OBSOLETE AFTER CORRECTING PARSER GRAMMAR
-        ///excluding 'NOT' nodes in tree representation
-
+        if(x->right)
+            x->right->data->negated ^= true;
+        else TreeError("Syntax Tree Error: missing right child!");
     }
 
+    std::cout<< "\n\nSTEP " << ++a << ": \n";
+    print(std::cout);
+    atomizeNegation(x->left);
+    atomizeNegation(x->right);
+
 }
 
-void AST::postDestruct(token *p){
+void AST::postDestruct(shared_ptr<node> p){
     if (p == nullptr) return;
-    if (p->type >= token::OR) postDestruct(p->left); //NOT LEAF
-    if (p->type > token::OR) postDestruct(p->right); //NOT UNARY OR LEAF
-    delete p;
+    postDestruct(p->left);
+    postDestruct(p->right);
 }
 
 
-void AST::printRaw(std::ostream& o, token* p, const std::string& prefix, bool isTail){
-
+void AST::printRaw(std::ostream& o, std::shared_ptr<node> p, const std::string& prefix, bool isTail){
+    if(p == nullptr) return;
     o << prefix + (prefix.empty() ? "    " : (isTail ? "+-- " : "|-- ") );
 
-    p->print(o);
+    p->data->print(o);
     o << std::endl;
-    if(p->isBinary()){
-        printRaw(o, p->right, prefix + (isTail ? "    " : "|   "), false);
-        printRaw(o, p->left, prefix + (isTail ? "    " : "|   "), true);
+    printRaw(o, p->right, prefix + (isTail ? "    " : "|   "), false);
+    printRaw(o, p->left, prefix + (isTail ? "    " : "|   "), true);
 
-    }
 }
