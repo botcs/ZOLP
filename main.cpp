@@ -16,7 +16,7 @@ int main()
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "third"};
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "not", "not", "true"};
         //rdp.tokens=vector<string>{"first", "and", "second", "and", "third"};
-        stringstream ss("(a and b) or (!b and c)");
+        stringstream ss("![(a and b) or (!b and c)] & [(A and B) or (C and D)]");
         tree.parse(ss, cout);
 
         cout<<"\n\n INITIAL Parsing:\n";
