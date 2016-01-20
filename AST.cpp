@@ -11,8 +11,9 @@ public:
     TreeError(const std::string& detail) : _detail(detail.c_str()){}
 };
 
-
+int a = 0;
 void AST::CNF(token*x){
+    ++a;
     //std::cout<<x->type<<"ASD\n";
     if(!x->isBinary()) return;
     if(x->type == token::OR){
@@ -33,6 +34,10 @@ void AST::CNF(token*x){
             x->left = y;
         }
     }
+
+    std::cout << "\n\nSTEP " << a << ": \n";
+    print(std::cout);
+
     CNF(x->left);
     CNF(x->right);
 }
@@ -129,12 +134,14 @@ void AST::postDestruct(token *p){
 
 
 void AST::printRaw(std::ostream& o, token* p, const std::string& prefix, bool isTail){
-    o << prefix + (isTail ? "'-- " : "|-- ");
+
+    o << prefix + (prefix.empty() ? "    " : (isTail ? "+-- " : "|-- ") );
+
     p->print(o);
     o << std::endl;
     if(p->isBinary()){
-        printRaw(o, p->left, prefix + (isTail ? "    " : "|   "), false);
-        printRaw(o, p->right, prefix + (isTail ? "    " : "|   "), true);
+        printRaw(o, p->right, prefix + (isTail ? "    " : "|   "), false);
+        printRaw(o, p->left, prefix + (isTail ? "    " : "|   "), true);
 
     }
 }

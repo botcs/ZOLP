@@ -6,7 +6,7 @@
 
 
 #include "AST.h"
-
+#include <fstream>
 int main()
 {
 
@@ -16,7 +16,7 @@ int main()
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "third"};
         //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "not", "not", "true"};
         //rdp.tokens=vector<string>{"first", "and", "second", "and", "third"};
-        stringstream ss("a or b or c or a or b or c");
+        stringstream ss("(a and b) or (!b and c)");
         tree.parse(ss, cout);
 
         cout<<"\n\n INITIAL Parsing:\n";

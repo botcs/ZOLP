@@ -7,9 +7,9 @@ struct AST //Abstract Syntax Tree
 {
     token *root = nullptr;
 
-    void print(std::ostream& o, bool Fancy = false){
-        if(Fancy) printFancy(o, root);
-        else printRaw(o, root);
+    void print(std::ostream& o){
+
+        printRaw(o, root);
     }
 
     void printFancy(std::ostream& o, token* p, int indent = 0);
