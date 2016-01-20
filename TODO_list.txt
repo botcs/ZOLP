@@ -1,3 +1,5 @@
+The lexer is too dumb, need to implement it better
+-------------
 Implement a better parsing for cases like:
 
 A or true -> true

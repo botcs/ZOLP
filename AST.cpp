@@ -11,31 +11,41 @@ class TreeError : public std::exception {
 public:
     TreeError(const std::string& detail) : _detail(detail.c_str()){}
 };
+
+shared_ptr<AST::node> AST::copy(shared_ptr<node> copyFrom){
+    if(copyFrom == nullptr) return nullptr;
+
+    shared_ptr<node> newRoot = make_shared<node>(make_shared<token> (*copyFrom->data));
+    newRoot->left = copy(copyFrom->left);
+    newRoot->right = copy(copyFrom->right);
+    return newRoot;
+}
+
 int a = 0;
 void AST::CNF(shared_ptr<node> x){
-    if(x == nullptr) return;
+    if(x == nullptr || !(x->left && x->right) ) return;
     if(x->data->type == token::OR){
         if(x->left->data->type == token::AND){
             x->left->data->type = token::OR;
             x->data->type = token::AND;
             auto y = make_shared<node>(token::OR);
             y->left = x->left->right;
-            y->right = make_shared<node>(*x->right);
+            y->right = copy(x->right);
             x->left->right = x->right;
             x->right = y;
         }
-        if(x->right->data->type == token::AND){
+        else if(x->right->data->type == token::AND){
             x->right->data->type = token::OR;
             x->data->type = token::AND;
             auto y = make_shared<node>(token::OR);
             y->right = x->right->left;
-            y->left = make_shared<node>(*x->left);
+            y->left = copy(x->left);
             x->right->left = x->left;
             x->left = y;
         }
     }
-    /*std::cout<< "\n\nSTEP " << ++a << ": \n";
-    print(std::cout);*/
+    std::cout<< "\n\nSTEP " << ++a << ": \n";
+    print(std::cout);
     CNF(x->left);
     CNF(x->right);
 }
@@ -74,8 +84,8 @@ void AST::atomizeNegation(shared_ptr<node> x){
         else TreeError("Syntax Tree Error: missing right child!");
     }
 
-    std::cout<< "\n\nSTEP " << ++a << ": \n";
-    print(std::cout);
+    /*std::cout<< "\n\nSTEP " << ++a << ": \n";
+    print(std::cout);*/
     atomizeNegation(x->left);
     atomizeNegation(x->right);
 

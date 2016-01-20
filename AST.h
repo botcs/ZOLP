@@ -19,6 +19,8 @@ struct AST //Abstract Syntax Tree
         printRaw(o, root);
     }
 
+    static shared_ptr<node> copy(shared_ptr<node> copyRoot);
+
     void printRaw(ostream& o, shared_ptr<node> p, const string& prefix = "", bool isTail = true);
     void parse(stringstream& ss);
     void parse(stringstream& ss, ostream& o);
