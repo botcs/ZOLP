@@ -1,0 +1,100 @@
+Parser initialized at 0x22fd2c
+"input"	 interpreted as
+********************************************
+"![(a"	 [a] ;
+
+"and"	 and ;
+
+"b)"	 CLOSE ;
+
+"or"	 or ;
+
+"(!b"	 [b] ;
+
+"and"	 and ;
+
+"c)]"	 CLOSE ;
+
+"&"	 and ;
+
+"[(A"	 [A] ;
+
+"and"	 and ;
+
+"B)"	 CLOSE ;
+
+"or"	 or ;
+
+"(C"	 [C] ;
+
+"and"	 and ;
+
+"D)]"	 CLOSE ;
+
+Factorizing ended
+
+BUFFERED tokens at 0x22fd2c :
+ "not" "OPEN" "OPEN" "[a]" "and" "[b]" "CLOSE" "or" "OPEN" "not" "[b]" "and" "[c]" "CLOSE" "CLOSE" "and" "OPEN" "OPEN" "[A]" "and" "[B]" "CLOSE" "or" "OPEN" "[C]" "and" "[D]" "CLOSE" "CLOSE"
+
+
+
+ INITIAL Parsing:
+    and
+    |-- or
+    |   |-- and
+    |   |   |-- [D]
+    |   |   +-- [C]
+    |   +-- and
+    |       |-- [B]
+    |       +-- [A]
+    +-- !or
+        |-- and
+        |   |-- [c]
+        |   +-- ![b]
+        +-- and
+            |-- [b]
+            +-- [a]
+
+
+ AFTER atomizeNegation:
+    and
+    |-- or
+    |   |-- and
+    |   |   |-- [D]
+    |   |   +-- [C]
+    |   +-- and
+    |       |-- [B]
+    |       +-- [A]
+    +-- and
+        |-- or
+        |   |-- ![c]
+        |   +-- [b]
+        +-- or
+            |-- ![b]
+            +-- ![a]
+
+
+ AFTER CNF:
+    and
+    |-- and
+    |   |-- and
+    |   |   |-- or
+    |   |   |   |-- [D]
+    |   |   |   +-- [B]
+    |   |   +-- or
+    |   |       |-- [C]
+    |   |       +-- [B]
+    |   +-- and
+    |       |-- or
+    |       |   |-- [D]
+    |       |   +-- [A]
+    |       +-- or
+    |           |-- [C]
+    |           +-- [A]
+    +-- and
+        |-- or
+        |   |-- ![c]
+        |   +-- [b]
+        +-- or
+            |-- ![b]
+            +-- ![a]

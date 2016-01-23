@@ -1,0 +1,24 @@
+The lexer is too dumb, need to implement it better
+-------------
+Implement a better parsing for cases like:
+
+A or true -> true
+A and true -> A
+A or false -> A
+A and false -> false
+
+to improve CNF step count, and restrain number of new nodes
+for building an AST.
+
+-------------
+
+Implement the basic methods of resolution
+
+-------------
+
+Try out other parsers: LL, LR, LALR, etc.
+Simultaneusly make the AST interface independent to parser implementations
+
+-------------
+
+And finally start developing my own First Order Logic library

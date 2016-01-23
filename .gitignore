@@ -17,6 +17,11 @@ bin/
 # Fortran module files
 *.mod
 
+# CBP things
+*.layout
+*.depend
+
+
 # Test data
 *.txt
 

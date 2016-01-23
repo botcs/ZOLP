@@ -6,25 +6,32 @@
 
 
 #include "AST.h"
-
+#include <fstream>
+#include <ctime>
 int main()
 {
 
     using namespace std;
     try{
         AST tree;
-        //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "third"};
-        //rdp.tokens=vector<string>{"(", "first", "and", "second", ")",  "and", "not", "not", "true"};
-        //rdp.tokens=vector<string>{"first", "and", "second", "and", "third"};
-        stringstream ss("!( notnot A and (B or D) and C)");
-        tree.parse(ss, cout);
+        auto& OUT = cout;
 
-        tree.print(cout);
+        stringstream ss("aorboraorboraorb and c");
+        auto t = clock();
+        tree.parse(ss, OUT);
+        cout << clock() - t;
 
+        OUT<<"\n\n INITIAL Parsing:\n";
+        tree.print(OUT);
+
+        OUT<<"\n\n AFTER atomizeNegation:\n";
         tree.atomizeNegation(tree.root);
+        tree.print(OUT);
 
-        cout<<"\n\n AFTER atomizeNegation:\n";
-        tree.print(cout);
+
+        OUT<<"\n\n AFTER CNF:\n";
+        tree.CNF(tree.root);
+        tree.print(OUT);
 
 
 
