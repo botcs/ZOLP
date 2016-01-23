@@ -7,6 +7,8 @@ struct AST //Abstract Syntax Tree
 {
     struct node{
         shared_ptr<token> data;
+
+        shared_ptr<node> parent = nullptr;
         shared_ptr<node> left = nullptr;
         shared_ptr<node> right = nullptr;
 

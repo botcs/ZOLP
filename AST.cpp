@@ -20,9 +20,9 @@ shared_ptr<AST::node> AST::copy(shared_ptr<node> copyFrom){
     newRoot->right = copy(copyFrom->right);
     return newRoot;
 }
-
+int step = 0;
 void AST::CNF(shared_ptr<node> x){
-    if(x == nullptr || !(x->left && x->right) ) return;
+    if(x == nullptr || !(x->left && x->right)) return;
     if(x->data->type == token::OR){
         if(x->left->data->type == token::AND){
             x->left->data->type = token::OR;
@@ -42,9 +42,15 @@ void AST::CNF(shared_ptr<node> x){
             x->right->left = x->left;
             x->left = y;
         }
+
     }
+    if(x->parent && x->parent->data->type == token::OR)
+        CNF(x->parent);
     CNF(x->left);
     CNF(x->right);
+
+    std::cout << "\n\n STEP:" << ++step << "\n";
+    print(std::cout);
 }
 
 
@@ -56,11 +62,7 @@ void AST::parse(std::istream& ss){
 void AST::parse(std::istream& ss, std::ostream& o){
     RDparser parser(ss, o);
     parser.print(o);
-    root = parser.parseAnd();
-
-    while(!parser.complete()){
-        root = parser.parseRightHalfExpr(root);
-    }
+    root = parser.parseExpression();
 }
 
 void AST::atomizeNegation(shared_ptr<node> x){

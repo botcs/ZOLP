@@ -24,7 +24,7 @@ using node_p = std::shared_ptr<AST::node>;
 struct RDparser
 {
     node_p parseExpression(){
-        auto expr = parseAnd();
+        auto expr = parseAnd(nullptr);
         while(!complete())
             expr = parseRightHalfExpr(expr);
 
@@ -32,11 +32,11 @@ struct RDparser
     }
 
     node_p parseRightHalfExpr(node_p);
-    node_p parseAnd();
-    node_p parseOr();
-    node_p parseNot();
-    node_p parseParen();
-    node_p parseAtom();
+    node_p parseAnd(node_p);
+    node_p parseOr(node_p);
+    node_p parseNot(node_p);
+    node_p parseParen(node_p);
+    node_p parseAtom(node_p);
 
     std::vector<std::shared_ptr<token> > tokens;
     size_t index = 0;

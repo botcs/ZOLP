@@ -12,16 +12,17 @@ node_p RDparser::parseRightHalfExpr(node_p leftChild){
 
     auto danglingNode = getAccepted();
     danglingNode->left = leftChild;
-    danglingNode->right = parseAnd();
+    danglingNode->right = parseAnd(danglingNode);
 
     return danglingNode;
 }
 
-std::shared_ptr<AST::node> RDparser::parseAnd(){
-    auto leftChild = parseOr();
+std::shared_ptr<AST::node> RDparser::parseAnd(node_p parent){
+    auto leftChild = parseOr(parent);
     if (accept(token::OR)){
         auto realOrNode = getAccepted();
-        auto rightChild  = parseOr();
+        auto rightChild  = parseOr(realOrNode);
+        leftChild->parent = realOrNode;
         realOrNode->left = leftChild;
         realOrNode->right = rightChild;
 
@@ -29,32 +30,33 @@ std::shared_ptr<AST::node> RDparser::parseAnd(){
     }
     return leftChild;
 }
-std::shared_ptr<AST::node> RDparser::parseOr(){
-    auto leftChild = parseNot();
+std::shared_ptr<AST::node> RDparser::parseOr(node_p parent){
+    auto leftChild = parseNot(parent);
     if (accept(token::AND)){
         auto realAndNode = getAccepted();
-        auto rightChild  = parseNot();
+        auto rightChild  = parseNot(realAndNode);
+        leftChild->parent = realAndNode;
         realAndNode->left = leftChild;
         realAndNode->right = rightChild;
         return realAndNode;
     }
     return leftChild;
 }
-std::shared_ptr<AST::node> RDparser::parseNot(){
+std::shared_ptr<AST::node> RDparser::parseNot(node_p parent){
     if(accept(token::NOT)){
-        auto negatedChild = parseNot();
-        negatedChild->data->negated = !negatedChild->data->negated;
+        auto negatedChild = parseNot(parent);
+        negatedChild->data->negated ^= true;
         return negatedChild;
     }
-    return parseParen();
+    return parseParen(parent);
 }
-std::shared_ptr<AST::node> RDparser::parseParen(){
+std::shared_ptr<AST::node> RDparser::parseParen(node_p parent){
 
     if(accept(token::OPEN)){
         auto startingDepth = parenDepth;
         ++parenDepth;
 
-        auto parenExpr = parseAnd();
+        auto parenExpr = parseAnd(parent);
         if(accept(token::CLOSE)) {
             --parenDepth;
             return parenExpr;
@@ -73,17 +75,11 @@ std::shared_ptr<AST::node> RDparser::parseParen(){
 
         throw ParseError("Missing parentheses");
     }
-    if(accept(token::TRUE)){
-        return getAccepted();
-    }
 
-    if(accept(token::FALSE)){
-        return getAccepted();
-    }
-
-    if(accept(token::VARIABLE))
+    if(accept(token::TRUE) || accept(token::FALSE) || accept(token::VARIABLE))
         return getAccepted();
 
+    //SHAN'T REACH
     throw ParseError("Could not resolve Atomic expression");
 }
 

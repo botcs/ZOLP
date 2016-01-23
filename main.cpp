@@ -16,7 +16,7 @@ int main()
         AST tree;
         auto& OUT = cout;
 
-        stringstream ss("aorboraorboraorb and c");
+        stringstream ss("A or ( (X and Y) or (W and Z) )");
         auto t = clock();
         tree.parse(ss, OUT);
         cout << clock() - t;
